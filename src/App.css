@@ -1,0 +1,66 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+@layer components {
+  .app-bg {
+    @apply bg-gray-100 dark:bg-[#0B0B0B];
+  }
+
+  .card-bg {
+    @apply bg-white dark:bg-[#181818];
+  }
+
+  .app-text {
+    @apply text-black dark:text-white;
+  }
+
+  .app-text-muted {
+    @apply text-gray-600 dark:text-gray-400;
+  }
+
+  .app-border {
+    @apply border-gray-300 dark:border-white/10;
+  }
+}
+
+@theme {
+  /* Apex Auto-Enterprise - Electric Blue Brand Palette */
+  --color-primary: #0066ff;
+  --color-on-primary: #ffffff;
+  --color-primary-container: rgba(0, 102, 255, 0.15);
+  --color-on-primary-container: #cce0ff;
+
+  /* Surface & Backgrounds (Premium Dark Mode) */
+  --color-surface: #131313;
+  --color-surface-dim: #0e0e0e;
+  --color-surface-bright: #3a3939;
+  --color-surface-container-lowest: #0e0e0e;
+  --color-surface-container-low: #1c1b1b;
+  --color-surface-container: #212121;
+  --color-surface-container-high: #2b2b2b;
+  --color-surface-container-highest: #333333;
+
+  /* Typography & Content */
+  --color-on-surface: #e6e1e1;
+  --color-on-surface-variant: #c9c5c5;
+  --color-outline: #484646;
+  --color-outline-variant: rgba(72, 70, 70, 0.5);
+
+  /* Functional States */
+  --color-success: #4caf50;
+  --color-warning: #ff9800;
+  --color-error: #f44336;
+
+  /* Effects & Glassmorphism */
+  --glass-bg: rgba(28, 27, 27, 0.6);
+  --glass-blur: 20px;
+  --blue-glow: 0 0 15px rgba(0, 102, 255, 0.15);
+
+  /* Typography Scale (IBM Plex Sans Arabic) */
+  --font-family-sans: "IBM Plex Sans Arabic", sans-serif;
+}
+
+body {
+  direction: rtl;
+  text-align: right;
+  font-family: "Cairo", sans-serif;
+}
