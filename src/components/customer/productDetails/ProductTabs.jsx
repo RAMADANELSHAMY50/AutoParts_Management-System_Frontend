@@ -1,78 +1,77 @@
 import { useState } from "react";
 
+import Description from "./Description";
+import Specifications from "./Specifications";
+import Features from "./Features";
+
 export default function ProductTabs({
   description,
-  specifications,
-  installation,
-  reviews,
+  specifications = {},
+  features = [],
+  packageIncludes = [],
 }) {
+  const [activeTab, setActiveTab] =
+    useState("description");
+
   const tabs = [
-    "Description",
-    "Specifications",
-    "Installation",
-    "Reviews",
+    {
+      id: "description",
+      label: "الوصف",
+    },
+    {
+      id: "specifications",
+      label: "المواصفات",
+    },
+    {
+      id: "features",
+      label: "المميزات",
+    },
   ];
 
-  const [activeTab, setActiveTab] = useState("Description");
-
-  const renderContent = () => {
-    switch (activeTab) {
-      case "Description":
-        return (
-          <div className="space-y-4 text-zinc-300 leading-8">
-            {description}
-          </div>
-        );
-
-      case "Specifications":
-        return (
-          <div className="space-y-3">
-            {specifications}
-          </div>
-        );
-
-      case "Installation":
-        return (
-          <div className="space-y-4 text-zinc-300 leading-8">
-            {installation}
-          </div>
-        );
-
-      case "Reviews":
-        return (
-          <div className="space-y-4">
-            {reviews}
-          </div>
-        );
-
-      default:
-        return null;
-    }
-  };
-
   return (
-    <section className="mt-10">
+    <div className="w-full">
       {/* Tabs */}
-      <div className="flex flex-wrap gap-3 border-b border-zinc-800">
+      <div className="mb-5 flex w-full overflow-x-auto border-b border-zinc-800 sm:mb-6">
         {tabs.map((tab) => (
           <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`border-b-2 px-5 py-4 text-sm font-medium transition ${
-              activeTab === tab
+            key={tab.id}
+            type="button"
+            onClick={() =>
+              setActiveTab(tab.id)
+            }
+            className={`shrink-0 border-b-2 px-4 py-3 text-xs font-medium transition sm:px-6 sm:text-sm ${
+              activeTab === tab.id
                 ? "border-blue-600 text-blue-500"
-                : "border-transparent text-zinc-400 hover:text-white"
+                : "border-transparent text-zinc-500 hover:text-white"
             }`}
           >
-            {tab}
+            {tab.label}
           </button>
         ))}
       </div>
 
       {/* Content */}
-      <div className="rounded-b-2xl border border-t-0 border-zinc-800 bg-[#171717] p-6">
-        {renderContent()}
-      </div>
-    </section>
+      {activeTab === "description" && (
+        <Description
+          description={description}
+          features={features}
+          packageIncludes={
+            packageIncludes
+          }
+        />
+      )}
+
+      {activeTab === "specifications" && (
+        <Specifications
+          specifications={
+            specifications
+          }
+        />
+      )}
+
+      {activeTab === "features" && (
+        <Features />
+      )}
+    </div>
   );
 }

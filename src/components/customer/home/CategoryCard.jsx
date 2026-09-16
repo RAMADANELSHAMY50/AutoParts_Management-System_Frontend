@@ -1,53 +1,63 @@
-import React from "react";
-import image from "../../../assets/images/hero.jpg"
+import { Link } from "react-router-dom";
 
 export default function CategoryCard({
-  title,
-  subtitle,
-  image,
+  category,
   className = "",
 }) {
+  const imageUrl = category?.image?.url
+    ? `http://localhost:1337${category.image.url}`
+    : null;
+
   return (
-    <div
+    <Link
+      to={`/catalog?category=${category.id}`}
       className={`
         ${className}
         relative
+        block
+        h-full
+        cursor-pointer
         overflow-hidden
         rounded-2xl
-        group
-        cursor-pointer
         border
         border-zinc-800
         bg-zinc-900
-        h-full
+        group
       `}
     >
       {/* Background Image */}
-      <img
-        src={image}
-        alt={title}
-        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-      />
+      {imageUrl ? (
+        <img
+          src={imageUrl}
+          alt={category.name}
+          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+        />
+      ) : (
+        <div className="h-full w-full bg-zinc-800" />
+      )}
 
-      {/* Dark Overlay */}
+      {/* Overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
 
       {/* Content */}
-      <div className="absolute bottom-0 right-0 w-full p-6 text-right">
-        <h3 className="text-white text-2xl font-bold">
-          {title}
+      <div className="absolute bottom-0 right-0 w-full p-4 sm:p-6">
+
+        <h3 className="text-lg font-bold text-white sm:text-2xl">
+          {category.name}
         </h3>
 
-        <p className="mt-2 text-sm text-zinc-300">
-          {subtitle}
+        <p className="mt-1 line-clamp-2 text-xs leading-5 text-zinc-300 sm:mt-2 sm:text-sm sm:leading-normal">
+          {category.description}
         </p>
+
       </div>
 
-      {/* Hover Glow */}
-      <div className="absolute inset-0 rounded-2xl border border-transparent group-hover:border-indigo-500/60 transition-all duration-300" />
+      {/* Hover Border */}
+      <div className="absolute inset-0 rounded-2xl border border-transparent transition-all duration-300 group-hover:border-indigo-500/60" />
 
-      {/* Shine Effect */}
+      {/* Shine */}
       <div className="absolute -left-40 top-0 h-full w-20 rotate-12 bg-white/10 blur-xl transition-all duration-700 group-hover:left-[120%]" />
-    </div>
+
+    </Link>
   );
 }

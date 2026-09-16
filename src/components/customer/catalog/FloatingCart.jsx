@@ -1,27 +1,30 @@
 import { FiShoppingCart } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
 
 const FloatingCart = ({
-  itemCount = 3,
-  total = 1249,
-  onClick = () => {},
+  itemCount = 0,
+  total = 0,
 }) => {
+  const navigate = useNavigate();
+
   return (
     <button
-      onClick={onClick}
+      type="button"
+      onClick={() => navigate("/cart")}
       className="
         fixed
-        bottom-6
-        right-6
+        bottom-3
+        right-3
         z-50
         flex
         items-center
-        gap-4
-        rounded-2xl
+        gap-2
+        rounded-xl
         border
         border-indigo-500/30
         bg-indigo-600
-        px-5
-        py-4
+        px-3
+        py-2.5
         text-white
         shadow-2xl
         shadow-indigo-500/30
@@ -29,27 +32,40 @@ const FloatingCart = ({
         duration-300
         hover:scale-105
         hover:bg-indigo-700
+
+        sm:bottom-6
+        sm:right-6
+        sm:gap-4
+        sm:rounded-2xl
+        sm:px-5
+        sm:py-4
       "
     >
       {/* Cart Icon */}
-      <div className="relative">
-        <FiShoppingCart size={26} />
+      <div className="relative shrink-0">
+        <FiShoppingCart className="h-5 w-5 sm:h-[26px] sm:w-[26px]" />
 
         {itemCount > 0 && (
           <span
             className="
               absolute
-              -right-2
-              -top-2
+              -right-1.5
+              -top-1.5
               flex
-              h-5
-              w-5
+              h-4
+              w-4
               items-center
               justify-center
               rounded-full
               bg-red-500
-              text-[11px]
+              text-[8px]
               font-bold
+
+              sm:-right-2
+              sm:-top-2
+              sm:h-5
+              sm:w-5
+              sm:text-[11px]
             "
           >
             {itemCount}
@@ -57,14 +73,14 @@ const FloatingCart = ({
         )}
       </div>
 
-      {/* Cart Info */}
-      <div className="text-left">
-        <p className="text-xs text-indigo-100">
-          Shopping Cart
+      {/* Text */}
+      <div className="text-right">
+        <p className="text-[9px] text-indigo-100 sm:text-xs">
+          سلة التسوق
         </p>
 
-        <h4 className="font-semibold">
-          ${total.toLocaleString()}
+        <h4 className="text-xs font-semibold sm:text-base">
+          {total.toLocaleString()} ر.س
         </h4>
       </div>
     </button>

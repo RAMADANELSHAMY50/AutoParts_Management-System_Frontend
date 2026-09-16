@@ -1,9 +1,11 @@
 import { useState } from "react";
+
 import {
   HiOutlineHeart,
   HiMinus,
   HiPlus,
 } from "react-icons/hi";
+
 import { FiShoppingCart } from "react-icons/fi";
 
 export default function AddToCart({
@@ -27,64 +29,88 @@ export default function AddToCart({
   };
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4 sm:space-y-5">
       {/* Quantity */}
       <div>
-        <p className="mb-3 text-sm font-medium text-zinc-300">
-          Quantity
+        <p className="mb-2 text-xs font-medium text-zinc-300 sm:mb-3 sm:text-sm">
+          الكمية
         </p>
 
-        <div className="flex w-fit items-center overflow-hidden rounded-xl border border-zinc-700 bg-[#171717]">
+        <div className="flex w-fit items-center overflow-hidden rounded-lg border border-zinc-700 bg-[#171717] sm:rounded-xl">
           <button
+            type="button"
             onClick={decrease}
-            className="p-4 transition hover:bg-zinc-800"
+            disabled={quantity <= 1}
+            className="p-2.5 transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-40 sm:p-4"
           >
-            <HiMinus />
+            <HiMinus className="h-4 w-4 sm:h-5 sm:w-5" />
           </button>
 
-          <span className="w-16 text-center text-lg font-semibold text-white">
+          <span className="w-10 text-center text-base font-semibold text-white sm:w-16 sm:text-lg">
             {quantity}
           </span>
 
           <button
+            type="button"
             onClick={increase}
-            className="p-4 transition hover:bg-zinc-800"
+            disabled={
+              stock <= 0 ||
+              quantity >= stock
+            }
+            className="p-2.5 transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-40 sm:p-4"
           >
-            <HiPlus />
+            <HiPlus className="h-4 w-4 sm:h-5 sm:w-5" />
           </button>
         </div>
 
-        <p className="mt-2 text-sm text-zinc-500">
-          {stock} item(s) available
+        <p className="mt-1.5 text-[11px] text-zinc-500 sm:mt-2 sm:text-sm">
+          {stock > 0
+            ? `${stock} قطعة متاحة`
+            : "لا توجد قطع متاحة"}
         </p>
       </div>
 
       {/* Buttons */}
-      <div className="flex gap-3">
+      <div className="flex gap-2 sm:gap-3">
+        {/* Wishlist */}
         <button
+          type="button"
           onClick={onWishlist}
-          className="flex h-14 w-14 items-center justify-center rounded-xl border border-zinc-700 bg-[#171717] transition hover:border-blue-600"
+          aria-label="إضافة إلى المفضلة"
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-zinc-700 bg-[#171717] transition hover:border-blue-600 sm:h-14 sm:w-14 sm:rounded-xl"
         >
-          <HiOutlineHeart size={22} />
+          <HiOutlineHeart className="h-5 w-5 sm:h-[22px] sm:w-[22px]" />
         </button>
 
+        {/* Add To Cart */}
         <button
-          onClick={() => onAddToCart(quantity)}
+          type="button"
+          onClick={() =>
+            onAddToCart(quantity)
+          }
           disabled={stock === 0}
-          className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-4 font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-zinc-700"
+          className="flex min-w-0 flex-1 items-center justify-center gap-1.5 rounded-lg bg-blue-600 px-2.5 py-3 text-xs font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-zinc-700 sm:gap-2 sm:rounded-xl sm:px-6 sm:py-4 sm:text-base"
         >
-          <FiShoppingCart size={20} />
-          Add to Cart
+          <FiShoppingCart className="h-4 w-4 shrink-0 sm:h-5 sm:w-5" />
+
+          <span className="truncate">
+            {stock > 0
+              ? "أضف إلى السلة"
+              : "غير متوفر"}
+          </span>
         </button>
       </div>
 
       {/* Buy Now */}
       <button
-        onClick={() => onBuyNow(quantity)}
+        type="button"
+        onClick={() =>
+          onBuyNow(quantity)
+        }
         disabled={stock === 0}
-        className="w-full rounded-xl border border-blue-600 py-4 font-semibold text-blue-500 transition hover:bg-blue-600 hover:text-white disabled:cursor-not-allowed disabled:border-zinc-700 disabled:text-zinc-500"
+        className="w-full rounded-lg border border-blue-600 py-3 text-xs font-semibold text-blue-500 transition hover:bg-blue-600 hover:text-white disabled:cursor-not-allowed disabled:border-zinc-700 disabled:text-zinc-500 sm:rounded-xl sm:py-4 sm:text-base"
       >
-        Buy Now
+        اشترِ الآن
       </button>
     </div>
   );

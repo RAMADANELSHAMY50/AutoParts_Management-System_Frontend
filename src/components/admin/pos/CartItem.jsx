@@ -12,72 +12,78 @@ export default function CartItem({
   removeItem,
 }) {
   return (
-    <div className="flex gap-4 rounded-2xl bg-[#232323] p-4 border border-zinc-800 hover:border-zinc-700 transition">
-
-      {/* Product Image */}
+    <div className="flex gap-2.5 rounded-xl border border-zinc-800 bg-[#232323] p-2.5 transition hover:border-zinc-700 sm:gap-4 sm:p-4">
+      {/* Image */}
       <img
-        src={item.image}
+        src={item.image || "/placeholder.jpg"}
         alt={item.name}
-        className="w-20 h-20 rounded-xl object-cover"
+        className="h-16 w-16 shrink-0 rounded-lg object-cover sm:h-20 sm:w-20 sm:rounded-xl"
       />
 
-      {/* Product Info */}
-      <div className="flex-1">
-
-        <h3 className="text-white font-semibold">
+      {/* Product */}
+      <div className="min-w-0 flex-1">
+        <h3 className="line-clamp-2 text-sm font-semibold text-white sm:text-base">
           {item.name}
         </h3>
 
         {item.sku && (
-          <p className="text-xs text-zinc-500 mt-1">
+          <p className="mt-1 text-[10px] text-zinc-500 sm:text-xs">
             SKU: {item.sku}
           </p>
         )}
 
-        <p className="text-blue-500 font-bold mt-2">
-          ${item.price.toFixed(2)}
+        <p className="mt-1.5 text-sm font-bold text-blue-500 sm:mt-2 sm:text-base">
+          {Number(item.price || 0).toFixed(2)} ر.س
         </p>
 
         {/* Quantity */}
-        <div className="flex items-center gap-3 mt-4">
-
+        <div className="mt-2.5 flex items-center gap-1.5 sm:mt-4 sm:gap-3">
           <button
-            onClick={() => decreaseQty(item.id)}
-            className="w-8 h-8 rounded-lg bg-[#2d2d2d] hover:bg-zinc-700 flex items-center justify-center transition"
+            type="button"
+            onClick={() =>
+              decreaseQty(item.id)
+            }
+            className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#2d2d2d] text-white transition hover:bg-zinc-700 sm:h-8 sm:w-8"
           >
-            <MdRemove className="text-white" />
+            <MdRemove />
           </button>
 
-          <span className="text-white font-medium min-w-[24px] text-center">
+          <span className="w-7 text-center text-sm text-white sm:w-8">
             {item.quantity}
           </span>
 
           <button
-            onClick={() => increaseQty(item.id)}
-            className="w-8 h-8 rounded-lg bg-blue-600 hover:bg-blue-700 flex items-center justify-center transition"
+            type="button"
+            onClick={() =>
+              increaseQty(item.id)
+            }
+            className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-600 text-white transition hover:bg-blue-700 sm:h-8 sm:w-8"
           >
-            <MdAdd className="text-white" />
+            <MdAdd />
           </button>
-
         </div>
       </div>
 
-      {/* Right Side */}
-      <div className="flex flex-col justify-between items-end">
-
+      {/* Right */}
+      <div className="flex shrink-0 flex-col items-end justify-between">
         <button
-          onClick={() => removeItem(item.id)}
-          className="text-red-500 hover:text-red-400 transition"
+          type="button"
+          onClick={() =>
+            removeItem(item.id)
+          }
+          className="flex h-8 w-8 items-center justify-center rounded-lg text-red-500 transition hover:bg-red-500/10 hover:text-red-400"
         >
-          <MdDeleteOutline size={22} />
+          <MdDeleteOutline size={20} />
         </button>
 
-        <p className="text-lg font-bold text-white">
-          ${(item.price * item.quantity).toFixed(2)}
+        <p className="text-sm font-bold text-white sm:text-lg">
+          {(
+            Number(item.price || 0) *
+            Number(item.quantity || 0)
+          ).toFixed(2)}{" "}
+          ر.س
         </p>
-
       </div>
-
     </div>
   );
 }

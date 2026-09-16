@@ -1,4 +1,3 @@
-import React from "react";
 import {
   FiUser,
   FiPhone,
@@ -9,26 +8,29 @@ import {
 
 export default function CustomerCard() {
   return (
-    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+    <div
+      dir="rtl"
+      className="grid grid-cols-1 gap-3 sm:gap-4 lg:grid-cols-2 lg:gap-6"
+    >
       {/* Customer Information */}
-      <div className="rounded-2xl border border-zinc-800 bg-[#181818] p-6">
-        <div className="mb-6 flex items-center gap-4">
-          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-blue-500/20">
-            <FiUser className="text-2xl text-blue-400" />
+      <div className="rounded-xl border border-zinc-800 bg-[#181818] p-4 sm:rounded-2xl sm:p-6">
+        <div className="mb-4 flex items-center gap-3 sm:mb-6 sm:gap-4">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-blue-500/20 sm:h-14 sm:w-14">
+            <FiUser className="text-xl text-blue-400 sm:text-2xl" />
           </div>
 
-          <div>
-            <h2 className="text-xl font-bold text-white">
+          <div className="min-w-0">
+            <h2 className="truncate text-lg font-bold text-white sm:text-xl">
               محمد عبدالله
             </h2>
 
-            <p className="text-sm text-zinc-400">
+            <p className="text-xs text-zinc-400 sm:text-sm">
               عميل منذ مايو 2022
             </p>
           </div>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-2.5 sm:space-y-4">
           <InfoRow
             icon={<FiPhone />}
             label="رقم الهاتف"
@@ -50,24 +52,24 @@ export default function CustomerCard() {
       </div>
 
       {/* Payment Information */}
-      <div className="rounded-2xl border border-zinc-800 bg-[#181818] p-6">
-        <div className="mb-6 flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-green-500/20">
-            <FiCreditCard className="text-xl text-green-400" />
+      <div className="rounded-xl border border-zinc-800 bg-[#181818] p-4 sm:rounded-2xl sm:p-6">
+        <div className="mb-4 flex items-center gap-3 sm:mb-6">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-green-500/20 sm:h-12 sm:w-12">
+            <FiCreditCard className="text-lg text-green-400 sm:text-xl" />
           </div>
 
           <div>
-            <h2 className="text-xl font-bold text-white">
+            <h2 className="text-lg font-bold text-white sm:text-xl">
               معلومات الدفع
             </h2>
 
-            <p className="text-sm text-zinc-400">
+            <p className="text-xs text-zinc-400 sm:text-sm">
               تفاصيل عملية الدفع
             </p>
           </div>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-2.5 sm:space-y-4">
           <InfoRow
             label="طريقة الدفع"
             value="بطاقة مدى"
@@ -86,7 +88,7 @@ export default function CustomerCard() {
           <InfoRow
             label="الحالة"
             value={
-              <span className="rounded-full bg-green-500/15 px-3 py-1 text-sm font-semibold text-green-400">
+              <span className="inline-flex rounded-full bg-green-500/15 px-3 py-1 text-xs font-semibold text-green-400 sm:text-sm">
                 تم الدفع
               </span>
             }
@@ -97,23 +99,25 @@ export default function CustomerCard() {
   );
 }
 
-/* --------------------------------------- */
-
-function InfoRow({ icon, label, value }) {
+function InfoRow({
+  icon,
+  label,
+  value,
+}) {
   return (
-    <div className="flex items-start gap-4 rounded-xl bg-[#202020] p-4">
+    <div className="flex min-w-0 items-start gap-3 rounded-xl bg-[#202020] p-3 sm:gap-4 sm:p-4">
       {icon && (
-        <div className="mt-1 text-lg text-zinc-400">
+        <div className="mt-1 shrink-0 text-base text-zinc-400 sm:text-lg">
           {icon}
         </div>
       )}
 
-      <div className="flex-1">
-        <p className="text-sm text-zinc-500">
+      <div className="min-w-0 flex-1">
+        <p className="text-xs text-zinc-500 sm:text-sm">
           {label}
         </p>
 
-        <div className="mt-1 text-white font-medium">
+        <div className="mt-1 break-words text-sm font-medium text-white sm:text-base">
           {value}
         </div>
       </div>

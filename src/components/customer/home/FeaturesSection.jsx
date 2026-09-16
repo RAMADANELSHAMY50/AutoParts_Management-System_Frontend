@@ -3,7 +3,6 @@ import {
   FiTruck,
   FiShield,
   FiRefreshCw,
-  FiHeadphones,
 } from "react-icons/fi";
 import FeatureCard from "./FeatureCard";
 
@@ -30,29 +29,35 @@ export default function FeaturesSection() {
       description:
         "شبكة من مراكز الخدمة المعتمدة المجهزة بأحدث التقنيات لضمان أفضل تركيب لسيارتك.",
     },
-   
   ];
 
   return (
-    <section className="bg-[#111111] py-20">
-      <div className="max-w-7xl mx-auto px-6">
+    <section
+      dir="rtl"
+      className="bg-[#111111] py-12 sm:py-20"
+    >
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+
         {/* Heading */}
-        <div className="text-center mb-14">
-          <span className="inline-block px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-sm font-medium">
-            Why Choose Apex Auto
+        <div className="mb-9 text-center sm:mb-14">
+
+          <span className="inline-block rounded-full border border-indigo-500/20 bg-indigo-500/10 px-3 py-1.5 text-xs font-medium text-indigo-400 sm:px-4 sm:py-2 sm:text-sm">
+            لماذا تختار Apex Auto؟
           </span>
 
-          <h2 className="mt-5 text-4xl md:text-5xl font-bold text-white">
-            Engineered for Performance
+          <h2 className="mt-4 text-2xl font-bold text-white sm:mt-5 sm:text-4xl md:text-5xl">
+            مصمم لأداء أفضل
           </h2>
 
-          <p className="mt-4 max-w-2xl mx-auto text-zinc-400 leading-7">
-            نحن لا نبيع قطع الغيار فحسب، بل نصمم تجربة قيادة متكاملة تعتمد على الدقة والجودة المتناهية.
+          <p className="mx-auto mt-3 max-w-2xl text-xs leading-6 text-zinc-400 sm:mt-4 sm:text-base sm:leading-7">
+            نحن لا نبيع قطع الغيار فحسب، بل نصمم تجربة قيادة متكاملة
+            تعتمد على الدقة والجودة والأداء المتميز.
           </p>
+
         </div>
 
         {/* Cards */}
-        <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 text-center ">
+        <div className="grid grid-cols-1 gap-4 text-center sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
           {features.map((feature) => (
             <FeatureCard
               key={feature.id}
@@ -62,6 +67,7 @@ export default function FeaturesSection() {
             />
           ))}
         </div>
+
       </div>
     </section>
   );

@@ -1,11 +1,16 @@
+
 import { Link } from "react-router-dom";
 import { HiChevronLeft } from "react-icons/hi";
 
-export default function Breadcrumb() {
+export default function Breadcrumb({
+  productName = "",
+  categoryName = "",
+}) {
   return (
-    <div className="flex items-center  gap-2 text-sm text-zinc-400 mb-6">
+    <div className="mb-6 flex items-center gap-2 text-sm text-zinc-400">
+
       <Link
-        to="/"
+        to="/home"
         className="transition hover:text-white"
       >
         الرئيسية
@@ -17,14 +22,16 @@ export default function Breadcrumb() {
         to="/catalog"
         className="transition hover:text-white"
       >
-        الهيكل الخارجي
+        {categoryName || "المنتجات"}
       </Link>
 
       <HiChevronLeft className="text-xs text-zinc-600" />
 
       <span className="font-medium text-white">
-        جناح خلفي كربون فايبر
+        {productName}
       </span>
+
     </div>
   );
 }
+

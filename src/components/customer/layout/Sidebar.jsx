@@ -1,20 +1,40 @@
-// import FilterSection from "./productDetails";
-// import PriceRange from "./PriceRange";
-// import BrandFilter from "./BrandFilter";
 
-const Sidebar = () => {
+import PriceRange from "../catalog/PriceRange";
+import BrandFilter from "../catalog/BrandFilter";
+import FilterSection from "../catalog/FilterSection";
+
+const Sidebar = ({
+  selectedCategories,
+  setSelectedCategories,
+  selectedBrand,
+  setSelectedBrand,
+  maxPrice,
+  setMaxPrice,
+}) => {
   return (
     <aside className="w-full space-y-6">
+
       {/* Categories */}
-      <FilterSection />
+      <FilterSection
+        selectedCategories={selectedCategories}
+        setSelectedCategories={setSelectedCategories}
+      />
 
       {/* Price */}
-      <PriceRange />
+      <PriceRange
+        maxPrice={maxPrice}
+        setMaxPrice={setMaxPrice}
+      />
 
       {/* Brands */}
-      <BrandFilter />
+      <BrandFilter
+        selectedBrand={selectedBrand}
+        setSelectedBrand={setSelectedBrand}
+      />
+
     </aside>
   );
 };
 
 export default Sidebar;
+

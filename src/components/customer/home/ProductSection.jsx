@@ -1,90 +1,101 @@
-import React from "react";
-import { FiArrowRight } from "react-icons/fi";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { FiArrowLeft } from "react-icons/fi";
 import ProductCard from "./ProductCard";
-
-// Images
-import product1 from "../../../assets/images/hero.jpg";
-
+import { Link } from "react-router-dom";
 
 export default function ProductSection() {
-  const products = [
-    {
-      id: 1,
-      name: "Performance Air Filter",
-      category: "Engine",
-      image: product1,
-      price: 89,
-      oldPrice: 110,
-      rating: 4.9,
-      isNew: true,
-    },
-    {
-      id: 2,
-      name: "Premium Brake Kit",
-      category: "Brakes",
-      image: product1,
-      price: 249,
-      oldPrice: 299,
-      rating: 4.8,
-      isNew: false,
-    },
-    {
-      id: 3,
-      name: "LED Headlight Set",
-      category: "Lighting",
-      image: product1,
-      price: 159,
-      oldPrice: 189,
-      rating: 4.7,
-      isNew: true,
-    },
-    {
-      id: 4,
-      name: "Alloy Sport Wheels",
-      category: "Wheels",
-      image: product1,
-      price: 499,
-      oldPrice: 560,
-      rating: 5.0,
-      isNew: false,
-    },
-  ];
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const getProducts = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:1337/api/products?populate=*&pagination[limit]=4"
+      );
+
+      setProducts(response.data?.data || []);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      setProducts([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getProducts();
+  }, []);
 
   return (
-    <section className="bg-[#111111] py-24">
-      <div className="max-w-7xl mx-auto px-6">
+    <section
+      dir="rtl"
+      className="bg-[#111111] py-14 sm:py-24"
+    >
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+
         {/* Header */}
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-12">
-          <div>
-            <span className="inline-flex items-center rounded-full border border-indigo-500/30 bg-indigo-500/10 px-4 py-1 text-sm text-indigo-400">
-              Featured Collection
+        <div className="mb-8 flex flex-col items-center justify-between gap-5 sm:mb-12 md:flex-row">
+
+          <div className="text-right">
+
+            <span className="inline-flex items-center rounded-full border border-indigo-500/30 bg-indigo-500/10 px-3 py-1 text-xs text-indigo-400 sm:px-4 sm:text-sm">
+              مجموعة مميزة
             </span>
 
-            <h2 className="mt-4 text-4xl font-bold text-white">
-              Best Selling Products
+            <h2 className="mt-3 text-2xl font-bold text-white sm:mt-4 sm:text-4xl">
+              المنتجات الأكثر مبيعًا
             </h2>
 
-            <p className="mt-3 text-zinc-400 max-w-xl">
-              Explore our most popular automotive parts, carefully selected for
-              quality, durability, and performance.
+            <p className="mt-2 max-w-xl text-xs leading-6 text-zinc-400 sm:mt-3 sm:text-base sm:leading-7">
+              اكتشف مجموعة من أشهر قطع غيار وإكسسوارات السيارات لدينا،
+              والتي تم اختيارها بعناية لضمان الجودة والمتانة والأداء المتميز.
             </p>
+
           </div>
 
-          <button className="flex items-center gap-2 rounded-xl border border-zinc-700 px-5 py-3 text-white transition hover:border-indigo-500 hover:bg-indigo-500">
-            View All
-            <FiArrowRight />
-          </button>
+          <Link
+            to="/catalog"
+            className="flex items-center gap-2 rounded-xl border border-zinc-700 px-4 py-2.5 text-sm text-white transition hover:border-indigo-500 hover:bg-indigo-500 sm:px-5 sm:py-3 sm:text-base"
+          >
+            عرض جميع المنتجات
+            <FiArrowLeft />
+          </Link>
+
         </div>
 
+        {/* Loading */}
+        {loading && (
+          <div className="py-10 text-center text-sm text-zinc-400">
+            جاري تحميل المنتجات...
+          </div>
+        )}
+
+        {/* Empty */}
+        {!loading && products.length === 0 && (
+          <div className="rounded-2xl border border-zinc-800 bg-[#181818] py-12 text-center">
+            <p className="text-base font-semibold text-white sm:text-lg">
+              لا توجد منتجات حاليًا
+            </p>
+
+            <p className="mt-2 text-xs text-zinc-500 sm:text-sm">
+              سيتم عرض المنتجات هنا عند إضافتها.
+            </p>
+          </div>
+        )}
+
         {/* Products */}
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {products.map((product) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-            />
-          ))}
-        </div>
+        {!loading && products.length > 0 && (
+          <div className="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-4">
+            {products.map((product) => (
+              <ProductCard
+                key={product.documentId || product.id}
+                product={product}
+              />
+            ))}
+          </div>
+        )}
+
       </div>
     </section>
   );

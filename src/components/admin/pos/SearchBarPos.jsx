@@ -1,8 +1,15 @@
 import React, { useState } from "react";
-import { MdSearch, MdQrCodeScanner } from "react-icons/md";
+import {
+  MdSearch,
+  MdQrCodeScanner,
+} from "react-icons/md";
 
-export default function SearchBar({ allProducts=[] ,setProducts }) {
+export default function SearchBar({
+  allProducts = [],
+  setProducts,
+}) {
   const [search, setSearch] = useState("");
+
   const handleSearch = (value) => {
     setSearch(value);
 
@@ -11,48 +18,45 @@ export default function SearchBar({ allProducts=[] ,setProducts }) {
       return;
     }
 
-    const filteredProducts = allProducts.filter((product) =>
-      product.name.toLowerCase().includes(value.toLowerCase()),
-    );
+    const searchValue =
+      value.toLowerCase().trim();
+
+    const filteredProducts =
+      allProducts.filter((product) =>
+        String(product.name || "")
+          .toLowerCase()
+          .includes(searchValue)
+      );
 
     setProducts(filteredProducts);
   };
+
   return (
-    <div className="px-6 py-5 bg-[#111111] border-b border-zinc-800 ">
-      <div className="relative max-w-xl">
-        {/* Search Icon */}
-        <MdSearch
-          className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500"
-          size={22}
-        />
+    <div className="border-b border-zinc-800 bg-[#111111] px-3 py-3 sm:px-4 sm:py-4 lg:px-6 lg:py-5">
+      <div className="w-full max-w-xl">
+        <div className="relative">
+          {/* Search Icon */}
+          <MdSearch
+            className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 sm:right-4"
+            size={20}
+          />
 
-        {/* Barcode Icon */}
-        <MdQrCodeScanner
-          className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500"
-          size={22}
-        />
+          {/* QR Icon */}
+          <MdQrCodeScanner
+            className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 sm:left-4"
+            size={20}
+          />
 
-        {/* Input */}
-        <input
-          value={search}
-          onChange={(e) => handleSearch(e.target.value)}
-          type="text"
-          placeholder="ابحث بالباركود أو اسم المنتج..."
-          className="
-            w-full
-            h-14
-            rounded-xl
-            bg-[#1a1a1a]
-            border
-            border-zinc-700
-            px-14
-            text-white
-            placeholder:text-zinc-500
-            focus:outline-none
-            focus:border-blue-500
-            transition
-          "
-        />
+          <input
+            value={search}
+            onChange={(e) =>
+              handleSearch(e.target.value)
+            }
+            type="text"
+            placeholder="ابحث بالباركود أو اسم المنتج..."
+            className="h-11 w-full rounded-xl border border-zinc-700 bg-[#1a1a1a] py-2 pl-11 pr-11 text-sm text-white placeholder:text-zinc-500 outline-none transition focus:border-blue-500 sm:h-12 sm:pl-12 sm:pr-12 sm:text-base lg:h-14"
+          />
+        </div>
       </div>
     </div>
   );

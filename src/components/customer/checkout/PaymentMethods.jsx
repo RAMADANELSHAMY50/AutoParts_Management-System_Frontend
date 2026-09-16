@@ -1,181 +1,250 @@
-// PaymentMethods.jsx
-
 import { useState } from "react";
-import { Building2, CreditCard, Wallet } from "lucide-react";
+import {
+  Building2,
+  CreditCard,
+  Wallet,
+} from "lucide-react";
 
 const methods = [
   {
     id: "bank",
+    value: "نقداً",
     title: "تحويل بنكي",
     icon: Building2,
   },
   {
     id: "apple",
+    value: "بطاقة",
     title: "Apple Pay",
     icon: Wallet,
   },
   {
     id: "card",
+    value: "بطاقة",
     title: "بطاقة ائتمان",
     icon: CreditCard,
   },
 ];
 
-export default function PaymentMethods() {
+export default function PaymentMethods({ onChange }) {
   const [selected, setSelected] = useState("card");
 
+  const handleSelect = (methodId) => {
+    setSelected(methodId);
+
+    const method = methods.find(
+      (item) => item.id === methodId
+    );
+
+    if (onChange) {
+      onChange(method.value);
+    }
+
+    console.log(
+      "PAYMENT METHOD:",
+      method.value
+    );
+  };
+
   return (
-    <div className="bg-[#171717] border border-zinc-800 rounded-2xl p-6">
+    <div
+      dir="rtl"
+      className="rounded-2xl border border-zinc-800 bg-[#171717] p-3 sm:p-4 lg:p-6"
+    >
       {/* Header */}
-      <div className="flex items-center justify-end gap-2 mb-8">
-        <CreditCard className="w-6 h-6 text-[#B7C9FF]" />
-        <h2 className="text-3xl font-bold text-white">
+      <div className="mb-4 sm:mb-5 lg:mb-6">
+        <h2 className="text-lg font-bold text-white sm:text-xl">
           طريقة الدفع
         </h2>
+
+        <p className="mt-1 text-xs text-zinc-400 sm:text-sm">
+          اختر طريقة الدفع المناسبة لك
+        </p>
       </div>
 
-      {/* Payment Options */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+      {/* Payment Methods */}
+      <div className="space-y-2.5 sm:space-y-3">
         {methods.map((method) => {
           const Icon = method.icon;
-          const active = selected === method.id;
+          const isSelected =
+            selected === method.id;
 
           return (
             <button
               key={method.id}
               type="button"
-              onClick={() => setSelected(method.id)}
-              className={`group rounded-xl border transition-all duration-300 h-36 flex flex-col items-center justify-center gap-4
-              
-              ${
-                active
-                  ? "border-blue-500 bg-[#242833] shadow-lg shadow-blue-500/10"
-                  : "border-zinc-700 bg-[#1E1E1E] hover:border-blue-500"
+              onClick={() =>
+                handleSelect(method.id)
+              }
+              className={`flex w-full items-center justify-between rounded-xl border p-2.5 text-right transition sm:p-3 lg:p-4 ${
+                isSelected
+                  ? "border-[#0066FF] bg-[#0066FF]/10"
+                  : "border-zinc-800 bg-[#1C1C1C] hover:border-zinc-600"
               }`}
             >
-              <Icon
-                className={`w-9 h-9 ${
-                  active
-                    ? "text-[#B7C9FF]"
-                    : "text-zinc-400 group-hover:text-white"
-                }`}
-              />
+              <div className="flex min-w-0 items-center gap-2.5 sm:gap-3 lg:gap-4">
+                {/* Icon */}
+                <div
+                  className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg sm:h-10 sm:w-10 lg:h-11 lg:w-11 ${
+                    isSelected
+                      ? "bg-[#0066FF] text-white"
+                      : "bg-[#252525] text-zinc-400"
+                  }`}
+                >
+                  <Icon
+                    size={18}
+                    className="sm:h-5 sm:w-5"
+                  />
+                </div>
 
-              <span
-                className={`text-xl font-semibold ${
-                  active
-                    ? "text-white"
-                    : "text-zinc-300"
+                {/* Text */}
+                <div className="min-w-0">
+                  <p className="truncate text-xs font-medium text-white sm:text-sm">
+                    {method.title}
+                  </p>
+
+                  <p className="mt-0.5 truncate text-[10px] text-zinc-500 sm:mt-1 sm:text-xs">
+                    {method.value === "نقداً"
+                      ? "الدفع عند الاستلام"
+                      : "دفع إلكتروني آمن"}
+                  </p>
+                </div>
+              </div>
+
+              {/* Radio */}
+              <div
+                className={`ml-2 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border sm:h-5 sm:w-5 ${
+                  isSelected
+                    ? "border-[#0066FF]"
+                    : "border-zinc-600"
                 }`}
               >
-                {method.title}
-              </span>
+                {isSelected && (
+                  <div className="h-2 w-2 rounded-full bg-[#0066FF] sm:h-2.5 sm:w-2.5" />
+                )}
+              </div>
             </button>
           );
         })}
       </div>
 
-      {/* Bank Transfer Info */}
-      {selected === "bank" && (
-        <div className="mt-8 rounded-xl border border-zinc-700 bg-[#1E1E1E] p-6">
-          <h3 className="text-lg font-semibold text-white mb-4">
-            معلومات التحويل البنكي
-          </h3>
-
-          <div className="space-y-2 text-zinc-300">
-            <p>
-              اسم البنك:
-              <span className="text-white font-medium">
-                {" "}
-                البنك الأهلي السعودي
-              </span>
-            </p>
-
-            <p>
-              رقم الحساب:
-              <span className="text-white font-medium">
-                {" "}
-                1234567890123456
-              </span>
-            </p>
-
-            <p>
-              الآيبان:
-              <span className="text-white font-medium">
-                {" "}
-                SA00 0000 0000 0000 0000 0000
-              </span>
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/* Apple Pay */}
-      {selected === "apple" && (
-        <div className="mt-8 rounded-xl border border-zinc-700 bg-[#1E1E1E] p-6">
-          <div className="text-center">
-            <Wallet className="mx-auto mb-4 w-12 h-12 text-white" />
-
-            <h3 className="text-xl font-semibold text-white">
-              سيتم تحويلك إلى Apple Pay
-            </h3>
-
-            <p className="text-zinc-400 mt-2">
-              بعد الضغط على تأكيد الدفع سيتم فتح Apple Pay لإتمام
-              العملية.
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/* Credit Card */}
-      {selected === "card" && (
-        <div className="mt-8 space-y-5">
-          {/* Card Number */}
-          <div>
-            <label className="block text-sm text-zinc-400 text-right mb-2">
-              رقم البطاقة
-            </label>
-
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="**** **** **** ****"
-                className="w-full h-14 rounded-xl bg-[#242424] border border-zinc-700 px-4 text-white placeholder:text-zinc-500 outline-none focus:border-blue-500"
+      {/* Selected Payment Content */}
+      <div className="mt-4 sm:mt-5 lg:mt-6">
+        {/* Bank */}
+        {selected === "bank" && (
+          <div className="rounded-xl border border-zinc-800 bg-[#1C1C1C] p-3 sm:p-4 lg:p-5">
+            <div className="mb-2.5 flex items-center gap-2 sm:mb-3 sm:gap-3">
+              <Building2
+                className="text-[#0066FF]"
+                size={18}
               />
 
-              <CreditCard className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 w-5 h-5" />
+              <h3 className="text-sm font-semibold text-white sm:text-base">
+                التحويل البنكي
+              </h3>
+            </div>
+
+            <p className="text-xs leading-6 text-zinc-400 sm:text-sm">
+              سيتم تأكيد الطلب بعد استلام التحويل
+              البنكي.
+            </p>
+          </div>
+        )}
+
+        {/* Apple Pay */}
+        {selected === "apple" && (
+          <div className="rounded-xl border border-zinc-800 bg-[#1C1C1C] p-3 sm:p-4 lg:p-5">
+            <div className="mb-2.5 flex items-center gap-2 sm:mb-3 sm:gap-3">
+              <Wallet
+                className="text-[#0066FF]"
+                size={18}
+              />
+
+              <h3 className="text-sm font-semibold text-white sm:text-base">
+                Apple Pay
+              </h3>
+            </div>
+
+            <p className="text-xs leading-6 text-zinc-400 sm:text-sm">
+              سيتم استخدام Apple Pay لإتمام عملية
+              الدفع بشكل آمن.
+            </p>
+          </div>
+        )}
+
+        {/* Card */}
+        {selected === "card" && (
+          <div className="rounded-xl border border-zinc-800 bg-[#1C1C1C] p-3 sm:p-4 lg:p-5">
+            <div className="mb-3 flex items-center gap-2 sm:gap-3">
+              <CreditCard
+                className="text-[#0066FF]"
+                size={18}
+              />
+
+              <h3 className="text-sm font-semibold text-white sm:text-base">
+                بطاقة ائتمان
+              </h3>
+            </div>
+
+            <div className="space-y-3 sm:space-y-4">
+              {/* Card Number */}
+              <div>
+                <label className="mb-1.5 block text-xs text-zinc-400 sm:mb-2 sm:text-sm">
+                  رقم البطاقة
+                </label>
+
+                <input
+                  type="text"
+                  placeholder="1234 5678 9012 3456"
+                  className="w-full rounded-lg border border-zinc-700 bg-[#151515] px-3 py-2.5 text-xs text-white outline-none transition focus:border-[#0066FF] sm:px-4 sm:py-3 sm:text-sm"
+                />
+              </div>
+
+              {/* Card Holder */}
+              <div>
+                <label className="mb-1.5 block text-xs text-zinc-400 sm:mb-2 sm:text-sm">
+                  اسم حامل البطاقة
+                </label>
+
+                <input
+                  type="text"
+                  placeholder="RAMADAN KHALED"
+                  className="w-full rounded-lg border border-zinc-700 bg-[#151515] px-3 py-2.5 text-xs text-white outline-none transition focus:border-[#0066FF] sm:px-4 sm:py-3 sm:text-sm"
+                />
+              </div>
+
+              {/* Expiry + CVV */}
+              <div className="grid grid-cols-2 gap-2.5 sm:gap-4">
+                {/* Expiry */}
+                <div>
+                  <label className="mb-1.5 block text-xs text-zinc-400 sm:mb-2 sm:text-sm">
+                    تاريخ الانتهاء
+                  </label>
+
+                  <input
+                    type="text"
+                    placeholder="MM/YY"
+                    className="w-full rounded-lg border border-zinc-700 bg-[#151515] px-3 py-2.5 text-xs text-white outline-none transition focus:border-[#0066FF] sm:px-4 sm:py-3 sm:text-sm"
+                  />
+                </div>
+
+                {/* CVV */}
+                <div>
+                  <label className="mb-1.5 block text-xs text-zinc-400 sm:mb-2 sm:text-sm">
+                    CVV
+                  </label>
+
+                  <input
+                    type="password"
+                    placeholder="•••"
+                    className="w-full rounded-lg border border-zinc-700 bg-[#151515] px-3 py-2.5 text-xs text-white outline-none transition focus:border-[#0066FF] sm:px-4 sm:py-3 sm:text-sm"
+                  />
+                </div>
+              </div>
             </div>
           </div>
-
-          {/* Expiry & CVV */}
-          <div className="grid md:grid-cols-2 gap-5">
-            <div>
-              <label className="block text-sm text-zinc-400 text-right mb-2">
-                تاريخ الانتهاء
-              </label>
-
-              <input
-                type="text"
-                placeholder="MM / YY"
-                className="w-full h-14 rounded-xl bg-[#242424] border border-zinc-700 px-4 text-white placeholder:text-zinc-500 outline-none focus:border-blue-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm text-zinc-400 text-right mb-2">
-                رمز التحقق (CVV)
-              </label>
-
-              <input
-                type="password"
-                placeholder="***"
-                className="w-full h-14 rounded-xl bg-[#242424] border border-zinc-700 px-4 text-white placeholder:text-zinc-500 outline-none focus:border-blue-500"
-              />
-            </div>
-          </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

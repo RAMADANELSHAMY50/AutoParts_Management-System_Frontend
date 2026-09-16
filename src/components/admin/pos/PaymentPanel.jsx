@@ -11,53 +11,72 @@ export default function PaymentPanel({
   taxRate = 0.15,
   onCheckout,
 }) {
-  const [paymentMethod, setPaymentMethod] = useState("نقداً");
+  const [paymentMethod, setPaymentMethod] =
+    useState("نقداً");
 
   const tax = (subtotal - discount) * taxRate;
-  const total = subtotal - discount + tax;
+
+  const total =
+    subtotal -
+    discount +
+    tax;
 
   return (
-    <div className=" bg-[#1b1b1b] border-t border-zinc-800 p-5 space-y-5">
-
-      {/* Payment Method */}
-      <div>
-        <h3 className="text-white font-semibold mb-3">
+    <div className="w-full border-t border-zinc-800 bg-[#1b1b1b] p-3 sm:p-4 lg:p-5">
+      {/* ==========================================
           Payment Method
+      ========================================== */}
+      <div>
+        <h3 className="mb-3 text-sm font-semibold text-white sm:text-base">
+          طريقة الدفع
         </h3>
 
-        <div className="grid grid-cols-2 gap-3">
-
+        <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
+          {/* Cash */}
           <button
-            onClick={() => setPaymentMethod("نقداً")}
-            className={`flex items-center justify-center gap-2 h-12 rounded-xl border transition
-              ${
-                paymentMethod === "نقداً"
-                  ? "bg-blue-600 border-blue-600 text-white"
-                  : "bg-[#252525] border-zinc-700 text-zinc-300 hover:bg-zinc-700"
-              }`}
+            type="button"
+            onClick={() =>
+              setPaymentMethod("نقداً")
+            }
+            className={`flex min-h-11 items-center justify-center gap-2 rounded-xl border px-2 py-2.5 text-xs font-semibold transition sm:min-h-12 sm:text-sm ${
+              paymentMethod === "نقداً"
+                ? "border-blue-500 bg-blue-600 text-white"
+                : "border-zinc-700 bg-[#242424] text-zinc-400 hover:border-zinc-600 hover:text-white"
+            }`}
           >
-            <MdPayments size={22} />
-            Cash
+            <MdPayments
+              size={20}
+            />
+
+            <span>نقداً</span>
           </button>
 
+          {/* Card */}
           <button
-            onClick={() => setPaymentMethod("بطاقة")}
-            className={`flex items-center justify-center gap-2 h-12 rounded-xl border transition
-              ${
-                paymentMethod === "بطاقة"
-                  ? "bg-blue-600 border-blue-600 text-white"
-                  : "bg-[#252525] border-zinc-700 text-zinc-300 hover:bg-zinc-700"
-              }`}
+            type="button"
+            onClick={() =>
+              setPaymentMethod("بطاقة")
+            }
+            className={`flex min-h-11 items-center justify-center gap-2 rounded-xl border px-2 py-2.5 text-xs font-semibold transition sm:min-h-12 sm:text-sm ${
+              paymentMethod === "بطاقة"
+                ? "border-blue-500 bg-blue-600 text-white"
+                : "border-zinc-700 bg-[#242424] text-zinc-400 hover:border-zinc-600 hover:text-white"
+            }`}
           >
-            <MdCreditCard size={22} />
-            Card
-          </button>
+            <MdCreditCard
+              size={20}
+            />
 
+            <span>بطاقة</span>
+          </button>
         </div>
       </div>
 
-      {/* Checkout */}
+      {/* ==========================================
+          Checkout
+      ========================================== */}
       <button
+        type="button"
         onClick={() =>
           onCheckout &&
           onCheckout({
@@ -68,12 +87,12 @@ export default function PaymentPanel({
             total,
           })
         }
-        className="w-full h-14 rounded-xl bg-green-600 hover:bg-green-700 transition flex items-center justify-center gap-2 font-semibold text-lg"
+        className="mt-4 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-green-600 px-3 text-base font-semibold text-white transition hover:bg-green-700 active:scale-[0.99] sm:mt-5 sm:h-14 sm:text-lg"
       >
-        <MdReceiptLong size={22} />
-        Complete Sale
-      </button>
+        <MdReceiptLong size={21} />
 
+        <span>إتمام البيع</span>
+      </button>
     </div>
   );
 }

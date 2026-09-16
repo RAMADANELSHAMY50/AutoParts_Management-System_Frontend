@@ -1,47 +1,40 @@
-import { ShoppingBagIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
-
 const ShopNowCard = ({
-  title = "تحتاج إلى قطع غيار جديدة؟",
-  description = "استكشف آلاف قطع الغيار الأصلية وعالية الجودة المناسبة لسيارتك مع عروض وخصومات حصرية.",
+  title = "اكتشف المزيد من المنتجات",
+  description = "تصفح مجموعة كبيرة من قطع الغيار والإكسسوارات.",
   buttonText = "تسوق الآن",
-  image = "https://images.unsplash.com/photo-1487754180451-c456f719a1fc?w=600",
+  image,
   onShop,
 }) => {
+  const defaultImage =
+    "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?auto=format&fit=crop&w=1200&q=80";
+
   return (
     <div className="overflow-hidden rounded-2xl border border-zinc-800 bg-[#171717] shadow-lg">
       {/* Image */}
-      <div className="relative h-52">
+      <div className="h-40 overflow-hidden sm:h-48 lg:h-52">
         <img
-          src={image}
-          alt="Auto Parts"
-          className="h-full w-full object-cover"
+          src={image || defaultImage}
+          alt={title}
+          className="h-full w-full object-cover transition duration-500 hover:scale-105"
         />
-
-        <div className="absolute inset-0 bg-gradient-to-t from-[#171717] via-black/40 to-transparent" />
       </div>
 
       {/* Content */}
-      <div className="space-y-4 p-6">
-        <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#A5B4FC]/10">
-            <ShoppingBagIcon className="h-6 w-6 text-[#A5B4FC]" />
-          </div>
+      <div className="p-4 sm:p-5 lg:p-6">
+        <h3 className="text-lg font-bold text-white sm:text-xl">
+          {title}
+        </h3>
 
-          <h3 className="text-xl font-bold text-white">
-            {title}
-          </h3>
-        </div>
-
-        <p className="text-sm leading-7 text-zinc-400">
+        <p className="mt-2 text-xs leading-6 text-zinc-400 sm:text-sm sm:leading-7">
           {description}
         </p>
 
         <button
+          type="button"
           onClick={onShop}
-          className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#A5B4FC] px-5 py-3 font-semibold text-black transition hover:bg-[#8D9CF7]"
+          className="mt-4 rounded-xl bg-[#A5B4FC] px-4 py-2.5 text-xs font-bold text-[#0E0E0E] transition hover:bg-[#C1C9FF] sm:mt-5 sm:px-5 sm:py-3 sm:text-sm"
         >
           {buttonText}
-          <ArrowRightIcon className="h-5 w-5" />
         </button>
       </div>
     </div>

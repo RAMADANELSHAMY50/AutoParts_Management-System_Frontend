@@ -1,61 +1,83 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaPlayCircle } from "react-icons/fa";
 
-export default function ProductGallery({ images = [] }) {
-  const [selectedImage, setSelectedImage] = useState(
-    images.length ? images[0] : null
-  );
+export default function ProductGallery({
+  images = [],
+}) {
+  const [selectedImage, setSelectedImage] =
+    useState(images[0] || null);
+
+  useEffect(() => {
+    setSelectedImage(
+      images[0] || null
+    );
+  }, [images]);
 
   if (!images.length) {
     return (
-      <div className="flex h-[500px] items-center justify-center rounded-2xl border border-zinc-800 bg-[#171717] text-zinc-500">
-        No Images
+      <div className="flex h-[280px] items-center justify-center rounded-xl border border-zinc-800 bg-[#171717] text-sm text-zinc-500 min-[400px]:h-[320px] sm:h-[400px] sm:rounded-2xl lg:h-[500px]">
+        لا توجد صور للمنتج
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 sm:space-y-4">
       {/* Main Image */}
-      <div className="relative overflow-hidden rounded-2xl border border-zinc-800 bg-[#171717]">
-        {/* Badge */}
-        <span className="absolute right-4 top-4 z-10 rounded-full bg-blue-600 px-4 py-1 text-sm font-medium text-white">
-          إصدار محدود
+      <div className="relative overflow-hidden rounded-xl border border-zinc-800 bg-[#171717] sm:rounded-2xl">
+        <span className="absolute right-2 top-2 z-10 rounded-full bg-blue-600 px-2.5 py-1 text-[10px] font-medium text-white sm:right-4 sm:top-4 sm:px-4 sm:text-sm">
+          منتج
         </span>
 
         <img
           src={selectedImage}
-          alt="Product"
-          className="h-[500px] w-full object-cover"
+          alt="صورة المنتج"
+          className="h-[280px] w-full object-cover min-[400px]:h-[320px] sm:h-[400px] lg:h-[500px]"
+          onError={(e) => {
+            e.currentTarget.src =
+              "/placeholder.jpg";
+          }}
         />
       </div>
 
       {/* Thumbnails */}
-      <div className="flex gap-3 overflow-x-auto">
-        {/* Video Thumbnail */}
+      <div className="flex gap-2 overflow-x-auto pb-1 sm:gap-3">
+        {/* Video */}
         <button
-          className="flex h-24 w-24 flex-shrink-0 items-center justify-center rounded-xl border border-zinc-700 bg-[#171717] transition hover:border-blue-500"
+          type="button"
+          aria-label="عرض الفيديو"
+          className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg border border-zinc-700 bg-[#171717] transition hover:border-blue-500 sm:h-20 sm:w-20 sm:rounded-xl lg:h-24 lg:w-24"
         >
-          <FaPlayCircle className="text-3xl text-zinc-400" />
+          <FaPlayCircle className="text-2xl text-zinc-400 sm:text-3xl" />
         </button>
 
-        {images.map((image, index) => (
-          <button
-            key={index}
-            onClick={() => setSelectedImage(image)}
-            className={`overflow-hidden rounded-xl border-2 transition ${
-              selectedImage === image
-                ? "border-blue-600"
-                : "border-zinc-700 hover:border-zinc-500"
-            }`}
-          >
-            <img
-              src={image}
-              alt={`Thumbnail ${index + 1}`}
-              className="h-24 w-24 object-cover"
-            />
-          </button>
-        ))}
+        {images.map(
+          (image, index) => (
+            <button
+              type="button"
+              key={index}
+              onClick={() =>
+                setSelectedImage(image)
+              }
+              aria-label={`عرض الصورة ${index + 1}`}
+              className={`h-16 w-16 shrink-0 overflow-hidden rounded-lg border-2 transition sm:h-20 sm:w-20 sm:rounded-xl lg:h-24 lg:w-24 ${
+                selectedImage === image
+                  ? "border-blue-600"
+                  : "border-zinc-700 hover:border-zinc-500"
+              }`}
+            >
+              <img
+                src={image}
+                alt={`صورة مصغرة ${index + 1}`}
+                className="h-full w-full object-cover"
+                onError={(e) => {
+                  e.currentTarget.src =
+                    "/placeholder.jpg";
+                }}
+              />
+            </button>
+          )
+        )}
       </div>
     </div>
   );

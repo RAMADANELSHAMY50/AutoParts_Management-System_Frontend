@@ -8,52 +8,133 @@ export default function NotificationList({
   search = "",
   loading = false,
 }) {
+
+  // ==========================================
+  // Loading
+  // ==========================================
   if (loading) {
     return (
-      <div className="py-20 text-center text-gray-400">
+      <div
+        dir="rtl"
+        className="
+          flex
+          min-h-[300px]
+          items-center
+          justify-center
+          text-gray-400
+        "
+      >
         جاري تحميل الإشعارات...
       </div>
     );
   }
 
-  const filteredNotifications = notifications.filter((item) => {
-    const notification = item.attributes || item;
+  // ==========================================
+  // Filter
+  // ==========================================
+  const filteredNotifications =
+    notifications
+      .filter((item) => {
 
-    const matchesCategory =
-      activeTab === "all" ||
-      notification.category === activeTab;
+        const notification =
+          item.attributes || item;
 
-    const searchText = search.toLowerCase().trim();
+        // Category
+        const matchesCategory =
+          activeTab === "all" ||
+          notification.category === activeTab;
 
-    const matchesSearch =
-      !searchText ||
-      notification.title?.toLowerCase().includes(searchText) ||
-      notification.message?.toLowerCase().includes(searchText);
+        // Search
+        const searchText =
+          search.toLowerCase().trim();
 
-    return matchesCategory && matchesSearch;
-  });
+        const title =
+          notification.title
+            ?.toLowerCase() || "";
 
+        const message =
+          notification.message
+            ?.toLowerCase() || "";
+
+        const type =
+          notification.type
+            ?.toLowerCase() || "";
+
+        const matchesSearch =
+          !searchText ||
+          title.includes(searchText) ||
+          message.includes(searchText) ||
+          type.includes(searchText);
+
+        return (
+          matchesCategory &&
+          matchesSearch
+        );
+      })
+      // ========================================
+      // Newest First
+      // ========================================
+      .sort((a, b) => {
+        const notificationA =
+          a.attributes || a;
+
+        const notificationB =
+          b.attributes || b;
+
+        return (
+          new Date(
+            notificationB.createdAt
+          ) -
+          new Date(
+            notificationA.createdAt
+          )
+        );
+      });
+
+  // ==========================================
+  // Empty
+  // ==========================================
   if (filteredNotifications.length === 0) {
     return (
       <EmptyState
         title="لا توجد إشعارات"
-        description="لا توجد إشعارات مطابقة للبحث أو التصنيف المحدد."
+        description={
+          search
+            ? "لا توجد إشعارات مطابقة لعملية البحث."
+            : activeTab !== "all"
+            ? "لا توجد إشعارات في هذا التصنيف."
+            : "لا توجد إشعارات في الوقت الحالي."
+        }
       />
     );
   }
 
+  // ==========================================
+  // List
+  // ==========================================
   return (
-    <div className="space-y-5">
-      {filteredNotifications.map((item) => {
-        const notification = item.attributes || item;
+    <div className="space-y-4">
 
-        return (
-          <NotificationCard
-            key={item.id}
-            notification={notification}
-          />
-        );
-      })}
+      {filteredNotifications.map(
+        (item) => {
+
+          const notification =
+            item.attributes || item;
+
+          return (
+            <NotificationCard
+              key={
+                item.documentId ||
+                item.id
+              }
+              notification={
+                notification
+              }
+            />
+          );
+        }
+      )}
+
     </div>
   );
 }

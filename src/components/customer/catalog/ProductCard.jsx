@@ -1,69 +1,368 @@
-import { FiHeart, FiShoppingCart, FiStar } from "react-icons/fi";
+import axios from "axios";
+import { useEffect, useMemo, useState } from "react";
+import ProductCard from "./ProductCard";
 
-const ProductCard = ({ product }) => {
+const API_URL = "http://localhost:1337";
+
+const PRODUCTS_PER_PAGE = 6;
+
+// ==========================================
+// Category Names Helper
+// ==========================================
+const getCategoryNames = (categories) => {
+  if (!categories) return [];
+
+  if (categories?.data) {
+    return getCategoryNames(categories.data);
+  }
+
+  if (Array.isArray(categories)) {
+    return categories
+      .map((category) => {
+        if (!category) return "";
+
+        if (typeof category === "string") {
+          return category;
+        }
+
+        if (category?.name) {
+          return category.name;
+        }
+
+        if (category?.attributes?.name) {
+          return category.attributes.name;
+        }
+
+        return "";
+      })
+      .filter(Boolean);
+  }
+
+  if (categories?.name) {
+    return [categories.name];
+  }
+
+  if (categories?.attributes?.name) {
+    return [categories.attributes.name];
+  }
+
+  return [];
+};
+
+const ProductGrid = ({
+  search,
+  sort,
+  currentPage,
+  selectedCategories,
+  selectedBrand,
+  maxPrice,
+  onAddToCart,
+  setTotalPages,
+}) => {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  // ==========================================
+  // Fetch Products
+  // ==========================================
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        setError("");
+
+        const response = await axios.get(
+          `${API_URL}/api/products?populate=*`
+        );
+
+        const data = response?.data?.data || [];
+
+        setProducts(data);
+      } catch (err) {
+        console.error("Error fetching products:", err);
+        setError("حدث خطأ أثناء تحميل المنتجات");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  // ==========================================
+  // Filter + Search + Sort
+  // ==========================================
+  const filteredProducts = useMemo(() => {
+    let result = [...products];
+
+    // Search
+    if (search?.trim()) {
+      const searchValue = search.trim().toLowerCase();
+
+      result = result.filter((product) => {
+        const name = String(
+          product?.name || ""
+        ).toLowerCase();
+
+        const sku = String(
+          product?.sku || ""
+        ).toLowerCase();
+
+        const description = String(
+          product?.description || ""
+        ).toLowerCase();
+
+        const brandName = String(
+          product?.brand?.data?.name ||
+            product?.brand?.name ||
+            product?.brand?.data?.attributes?.name ||
+            product?.brand?.attributes?.name ||
+            ""
+        ).toLowerCase();
+
+        return (
+          name.includes(searchValue) ||
+          sku.includes(searchValue) ||
+          description.includes(searchValue) ||
+          brandName.includes(searchValue)
+        );
+      });
+    }
+
+    // Categories
+    if (
+      Array.isArray(selectedCategories) &&
+      selectedCategories.length > 0
+    ) {
+      result = result.filter((product) => {
+        const categories =
+          product?.Categories || product?.category;
+
+        const categoryNames =
+          getCategoryNames(categories);
+
+        return selectedCategories.some((selected) =>
+          categoryNames.includes(selected)
+        );
+      });
+    }
+
+    // Brand
+    if (selectedBrand) {
+      result = result.filter((product) => {
+        const brand = product?.brand;
+
+        const brandId =
+          brand?.data?.id ||
+          brand?.id ||
+          brand?.data?.attributes?.id;
+
+        const brandName =
+          brand?.data?.name ||
+          brand?.name ||
+          brand?.data?.attributes?.name ||
+          brand?.attributes?.name;
+
+        return (
+          String(brandId) === String(selectedBrand) ||
+          brandName === selectedBrand
+        );
+      });
+    }
+
+    // Price
+    if (
+      maxPrice !== undefined &&
+      maxPrice !== null
+    ) {
+      result = result.filter((product) => {
+        const price = Number(
+          product?.salePrice ??
+            product?.price ??
+            0
+        );
+
+        return price <= Number(maxPrice);
+      });
+    }
+
+    // Sort
+    switch (sort) {
+      case "الأقدم أولاً":
+        result.sort(
+          (a, b) =>
+            new Date(a?.createdAt || 0) -
+            new Date(b?.createdAt || 0)
+        );
+        break;
+
+      case "السعر: من الأقل للأعلى":
+        result.sort((a, b) => {
+          const priceA = Number(
+            a?.salePrice ?? a?.price ?? 0
+          );
+
+          const priceB = Number(
+            b?.salePrice ?? b?.price ?? 0
+          );
+
+          return priceA - priceB;
+        });
+        break;
+
+      case "السعر: من الأعلى للأقل":
+        result.sort((a, b) => {
+          const priceA = Number(
+            a?.salePrice ?? a?.price ?? 0
+          );
+
+          const priceB = Number(
+            b?.salePrice ?? b?.price ?? 0
+          );
+
+          return priceB - priceA;
+        });
+        break;
+
+      case "الأكثر مبيعًا":
+        result.sort(
+          (a, b) =>
+            Number(
+              b?.soldCount || b?.sales || 0
+            ) -
+            Number(
+              a?.soldCount || a?.sales || 0
+            )
+        );
+        break;
+
+      case "الأعلى تقييمًا":
+        result.sort(
+          (a, b) =>
+            Number(b?.rating || 0) -
+            Number(a?.rating || 0)
+        );
+        break;
+
+      case "الأحدث أولاً":
+      default:
+        result.sort(
+          (a, b) =>
+            new Date(b?.createdAt || 0) -
+            new Date(a?.createdAt || 0)
+        );
+        break;
+    }
+
+    return result;
+  }, [
+    products,
+    search,
+    sort,
+    selectedCategories,
+    selectedBrand,
+    maxPrice,
+  ]);
+
+  // ==========================================
+  // Pagination
+  // ==========================================
+  const totalPages = Math.max(
+    1,
+    Math.ceil(
+      filteredProducts.length / PRODUCTS_PER_PAGE
+    )
+  );
+
+  useEffect(() => {
+    if (setTotalPages) {
+      setTotalPages(totalPages);
+    }
+  }, [totalPages, setTotalPages]);
+
+  const paginatedProducts = useMemo(() => {
+    const startIndex =
+      (currentPage - 1) * PRODUCTS_PER_PAGE;
+
+    const endIndex =
+      startIndex + PRODUCTS_PER_PAGE;
+
+    return filteredProducts.slice(
+      startIndex,
+      endIndex
+    );
+  }, [filteredProducts, currentPage]);
+
+  // ==========================================
+  // Loading
+  // ==========================================
+  if (loading) {
+    return (
+      <div className="grid grid-cols-2 gap-2.5 sm:gap-5">
+        {Array.from({
+          length: PRODUCTS_PER_PAGE,
+        }).map((_, index) => (
+          <div
+            key={index}
+            className="
+              h-[300px]
+              animate-pulse
+              rounded-lg
+              border
+              border-zinc-800
+              bg-[#181818]
+
+              sm:h-[390px]
+              sm:rounded-2xl
+            "
+          />
+        ))}
+      </div>
+    );
+  }
+
+  // ==========================================
+  // Error
+  // ==========================================
+  if (error) {
+    return (
+      <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-4 text-center text-xs text-red-400 sm:rounded-2xl sm:p-6 sm:text-sm">
+        {error}
+      </div>
+    );
+  }
+
+  // ==========================================
+  // Empty
+  // ==========================================
+  if (paginatedProducts.length === 0) {
+    return (
+      <div className="rounded-xl border border-zinc-800 bg-[#181818] p-6 text-center sm:rounded-2xl sm:p-10">
+        <p className="text-xs text-zinc-400 sm:text-sm">
+          لا توجد منتجات مطابقة للبحث أو الفلاتر الحالية.
+        </p>
+      </div>
+    );
+  }
+
+  // ==========================================
+  // Render
+  // ==========================================
   return (
-    <div className="group overflow-hidden rounded-2xl border border-zinc-800 bg-[#181818] transition-all duration-300 hover:-translate-y-1 hover:border-indigo-500 hover:shadow-xl hover:shadow-indigo-500/10">
-      {/* Image */}
-      <div className="relative overflow-hidden">
-        <img
-          src={product.image}
-          alt={product.name}
-          className="h-56 w-full object-cover transition duration-500 group-hover:scale-105"
+    <div className="grid grid-cols-2 gap-2.5 sm:gap-5">
+      {paginatedProducts.map((product) => (
+        <ProductCard
+          key={
+            product?.documentId ||
+            product?.id
+          }
+          product={product}
+          onAddToCart={onAddToCart}
         />
-
-        {/* Favorite */}
-        <button className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-black/60 text-white backdrop-blur transition hover:bg-indigo-600">
-          <FiHeart size={18} />
-        </button>
-
-        {/* Category */}
-        <span className="absolute left-4 top-4 rounded-full bg-indigo-600 px-3 py-1 text-xs font-medium text-white">
-          {product.category}
-        </span>
-      </div>
-
-      {/* Content */}
-      <div className="space-y-4 p-5">
-        {/* Product Name */}
-        <h3 className="line-clamp-2 text-lg font-semibold text-white">
-          {product.name}
-        </h3>
-
-        {/* Rating */}
-        <div className="flex items-center gap-2">
-          <FiStar className="fill-yellow-400 text-yellow-400" />
-
-          <span className="text-sm font-medium text-white">
-            {product.rating}
-          </span>
-
-          <span className="text-sm text-zinc-500">(120)</span>
-        </div>
-
-        {/* Price */}
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-xs text-zinc-500">Price</p>
-
-            <h4 className="text-2xl font-bold text-indigo-400">
-              ${product.price}
-            </h4>
-          </div>
-        </div>
-
-        {/* Buttons */}
-        <div className="flex gap-3">
-          <button className="flex-1 rounded-xl bg-indigo-600 py-3 font-medium text-white transition hover:bg-indigo-700">
-            Buy Now
-          </button>
-
-          <button className="flex h-12 w-12 items-center justify-center rounded-xl border border-zinc-700 text-zinc-300 transition hover:border-indigo-500 hover:bg-indigo-600 hover:text-white">
-            <FiShoppingCart size={20} />
-          </button>
-        </div>
-      </div>
+      ))}
     </div>
   );
 };
 
-export default ProductCard;
+export default ProductGrid;

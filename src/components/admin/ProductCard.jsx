@@ -4,21 +4,27 @@ import { IoAddCircleOutline } from "react-icons/io5";
 import AddProductModal from "./products/AddProductModal";
 import { useState } from "react";
 
-export default function ProductCard({ products, getProducts, getStockStatus }) {
+const API_URL = "http://localhost:1337";
+
+export default function ProductCard({
+  products,
+  getProducts,
+  getStockStatus,
+}) {
   const [isOpen, setIsOpen] = useState(false);
   const [productToEdit, setProductToEdit] = useState(null);
 
-  // =========================
+  // ==========================================
   // ADD
-  // =========================
+  // ==========================================
   const handleAdd = () => {
     setProductToEdit(null);
     setIsOpen(true);
   };
 
-  // =========================
+  // ==========================================
   // EDIT
-  // =========================
+  // ==========================================
   const handleEdit = (product) => {
     console.log("Product to edit:", product);
 
@@ -26,118 +32,345 @@ export default function ProductCard({ products, getProducts, getStockStatus }) {
     setIsOpen(true);
   };
 
-  // =========================
+  // ==========================================
   // DELETE
-  // =========================
+  // ==========================================
   const deleteProduct = async (documentId) => {
     try {
-      await axios.delete(`http://localhost:1337/api/products/${documentId}`);
+      await axios.delete(
+        `${API_URL}/api/products/${documentId}`
+      );
 
-      alert("Product deleted successfully");
+      alert("تم حذف المنتج بنجاح");
 
-      getProducts();
+      await getProducts();
     } catch (error) {
-      console.log(error.response?.data || error.message);
+      console.log(
+        error.response?.data || error.message
+      );
     }
   };
 
+  // ==========================================
+  // Image Helper
+  // ==========================================
+  const getImageUrl = (image) => {
+    if (!image) {
+      return "/placeholder.jpg";
+    }
+
+    if (image.url) {
+      return image.url.startsWith("http")
+        ? image.url
+        : `${API_URL}${image.url}`;
+    }
+
+    return "/placeholder.jpg";
+  };
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 bg-[#171717]">
+    <div
+      className="
+        grid
+        w-full
+        min-w-0
+        grid-cols-1
+        gap-3
+        sm:gap-4
+        md:grid-cols-2
+        lg:grid-cols-3
+        xl:grid-cols-4
+        bg-[#171717]
+      "
+    >
       {products.length !== 0 ? (
         products.map((product) => {
-          const status = getStockStatus(product.stock, product.minimumStock);
+          const status = getStockStatus(
+            product.stock,
+            product.minimumStock
+          );
 
-          // salePrice - costPrice
           const profit =
-            Number(product.salePrice || 0) - Number(product.costPrice || 0);
+            Number(product.salePrice || 0) -
+            Number(product.costPrice || 0);
 
           return (
-            <div key={product.documentId}>
-              <div className="border border-gray-800 rounded-2xl overflow-hidden hover:border-blue-500 transition-all duration-300">
-                {/* Image */}
-                <div className="relative">
+            <div
+              key={product.documentId}
+              className="min-w-0"
+            >
+              <div
+                className="
+                  w-full
+                  min-w-0
+                  overflow-hidden
+                  rounded-2xl
+                  border
+                  border-gray-800
+                  bg-[#181818]
+                  transition-all
+                  duration-300
+                  hover:border-blue-500
+                "
+              >
+                {/* ==========================================
+                    Image
+                ========================================== */}
+                <div className="relative w-full overflow-hidden">
                   <img
-                    src={`http://localhost:1337${product.image?.url}`}
-                    className="w-full h-52 object-cover transition-transform duration-[1s] ease-in-out hover:scale-110"
-                    alt={product.name}
+                    src={getImageUrl(product.image)}
+                    className="
+                      block
+                      h-40
+                      w-full
+                      object-cover
+                      transition-transform
+                      duration-[1s]
+                      ease-in-out
+                      hover:scale-110
+                      sm:h-44
+                      md:h-48
+                      lg:h-52
+                    "
+                    alt={product.name || "المنتج"}
+                    onError={(e) => {
+                      e.currentTarget.src =
+                        "/placeholder.jpg";
+                    }}
                   />
 
                   {/* Status */}
                   <span
-                    className={`absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-semibold ${status.className}`}
+                    className={`
+                      absolute
+                      right-2
+                      top-2
+                      rounded-full
+                      px-2
+                      py-1
+                      text-[10px]
+                      font-semibold
+                      sm:right-3
+                      sm:top-3
+                      sm:px-3
+                      sm:text-xs
+                      ${status.className}
+                    `}
                   >
                     {status.text}
                   </span>
 
                   {/* Category */}
-                  <span className="absolute top-9 right-4 mt-2 bg-blue-600 text-white px-3 py-1 rounded-full text-xs">
-                    {product.Categories}
-                  </span>
+                  {product.Categories && (
+                    <span
+                      className="
+                        absolute
+                        right-2
+                        top-10
+                        max-w-[calc(100%-1rem)]
+                        truncate
+                        rounded-full
+                        bg-blue-600
+                        px-2
+                        py-1
+                        text-[10px]
+                        text-white
+                        sm:right-3
+                        sm:top-11
+                        sm:px-3
+                        sm:text-xs
+                      "
+                    >
+                      {product.Categories}
+                    </span>
+                  )}
                 </div>
 
-                {/* Content */}
-                <div className="p-5">
-                  <div className="flex justify-between items-center">
-                    <h3 className="text-xl font-bold text-white mb-1">
+                {/* ==========================================
+                    Content
+                ========================================== */}
+                <div className="min-w-0 p-3 sm:p-4 lg:p-5">
+
+                  {/* Name + SKU */}
+                  <div
+                    className="
+                      flex
+                      min-w-0
+                      items-start
+                      justify-between
+                      gap-2
+                    "
+                  >
+                    <h3
+                      className="
+                        min-w-0
+                        flex-1
+                        truncate
+                        text-base
+                        font-bold
+                        text-white
+                        sm:text-lg
+                        lg:text-xl
+                      "
+                      title={product.name}
+                    >
                       {product.name}
                     </h3>
 
-                    <span className="text-white">{product.sku}</span>
+                    <span
+                      className="
+                        max-w-[35%]
+                        shrink-0
+                        truncate
+                        text-[10px]
+                        text-gray-400
+                        sm:text-xs
+                      "
+                      title={product.sku}
+                    >
+                      {product.sku || "-"}
+                    </span>
                   </div>
 
-                  <p className="text-gray-400 text-sm mb-4">
-                    متوافق مع:
+                  {/* Vehicles */}
+                  <p
+                    className="
+                      mt-2
+                      min-h-[36px]
+                      text-xs
+                      leading-5
+                      text-gray-400
+                      sm:text-sm
+                    "
+                  >
+                    <span className="font-medium text-gray-500">
+                      متوافق مع:
+                    </span>{" "}
+
                     {product.vehicles?.length > 0
                       ? product.vehicles
-                          .map((vehicle) => vehicle.name)
-                          .join(", ")
+                          .map(
+                            (vehicle) =>
+                              vehicle.manufacturer ||
+                              "بدون اسم"
+                          )
+                          .join("، ")
                       : "لا يوجد"}
                   </p>
 
-                  {/* Info */}
-                  <div className="grid grid-cols-3 gap-4 text-center border-t border-gray-800 pt-4">
+                  {/* ==========================================
+                      Info
+                  ========================================== */}
+                  <div
+                    className="
+                      mt-3
+                      grid
+                      grid-cols-3
+                      gap-1
+                      border-t
+                      border-gray-800
+                      pt-3
+                      text-center
+                      sm:mt-4
+                      sm:gap-2
+                      sm:pt-4
+                    "
+                  >
                     {/* Quantity */}
-                    <div>
-                      <p className="text-gray-500 text-xs">الكمية</p>
+                    <div className="min-w-0">
+                      <p className="truncate text-[9px] text-gray-500 sm:text-xs">
+                        الكمية
+                      </p>
 
-                      <h4 className="text-white font-bold mt-1">
-                        {product.quantity}
+                      <h4 className="mt-1 truncate text-xs font-bold text-white sm:text-sm">
+                        {product.quantity ?? 0}
                       </h4>
                     </div>
 
                     {/* Profit */}
-                    <div>
-                      <p className="text-gray-500 text-xs">الربح لكل قطعة</p>
+                    <div className="min-w-0">
+                      <p className="truncate text-[9px] text-gray-500 sm:text-xs">
+                        الربح لكل قطعة
+                      </p>
 
-                      <h4 className="text-white font-bold mt-1">{profit}</h4>
+                      <h4 className="mt-1 truncate text-xs font-bold text-white sm:text-sm">
+                        {profit}
+                      </h4>
                     </div>
 
                     {/* Price */}
-                    <div>
-                      <p className="text-gray-500 text-xs">السعر</p>
+                    <div className="min-w-0">
+                      <p className="truncate text-[9px] text-gray-500 sm:text-xs">
+                        السعر
+                      </p>
 
-                      <h4 className="text-blue-400 font-bold mt-1">
-                        {product.price}
+                      <h4 className="mt-1 truncate text-xs font-bold text-blue-400 sm:text-sm">
+                        {product.price ?? 0}
                       </h4>
                     </div>
                   </div>
 
-                  {/* Buttons */}
-                  <div className="flex gap-3 mt-6">
+                  {/* ==========================================
+                      Buttons
+                  ========================================== */}
+                  <div className="mt-4 flex gap-2 sm:mt-6 sm:gap-3">
+
                     {/* EDIT */}
                     <button
-                      onClick={() => handleEdit(product)}
-                      className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl flex items-center justify-center gap-2 transition"
+                      type="button"
+                      onClick={() =>
+                        handleEdit(product)
+                      }
+                      className="
+                        flex
+                        min-w-0
+                        flex-1
+                        items-center
+                        justify-center
+                        gap-2
+                        rounded-xl
+                        bg-blue-600
+                        py-2.5
+                        text-white
+                        transition
+                        hover:bg-blue-700
+                        sm:py-3
+                      "
                     >
-                      <FiEdit />
+                      <FiEdit className="text-sm sm:text-base" />
+
+                      <span className="text-xs sm:text-sm">
+                        تعديل
+                      </span>
                     </button>
 
                     {/* DELETE */}
                     <button
-                      onClick={() => deleteProduct(product.documentId)}
-                      className="w-14 bg-red-600 hover:bg-red-700 rounded-xl flex items-center justify-center text-white transition"
+                      type="button"
+                      onClick={() =>
+                        deleteProduct(
+                          product.documentId
+                        )
+                      }
+                      className="
+                        flex
+                        h-10
+                        w-10
+                        shrink-0
+                        items-center
+                        justify-center
+                        rounded-xl
+                        bg-red-600
+                        text-white
+                        transition
+                        hover:bg-red-700
+                        sm:h-12
+                        sm:w-14
+                      "
+                      aria-label="حذف المنتج"
+                      title="حذف المنتج"
                     >
-                      <FiTrash2 />
+                      <FiTrash2 className="text-sm sm:text-base" />
                     </button>
                   </div>
                 </div>
@@ -146,28 +379,82 @@ export default function ProductCard({ products, getProducts, getStockStatus }) {
           );
         })
       ) : (
-        <p className="text-white">No products found</p>
+        <div className="col-span-full py-10 text-center">
+          <p className="text-sm text-gray-400 sm:text-base">
+            لا توجد منتجات
+          </p>
+        </div>
       )}
 
-      {/* Add Product */}
-      <div className="border-dashed border border-gray-600 rounded-2xl flex flex-col justify-center items-center">
+      {/* ==========================================
+          Add Product Card
+      ========================================== */}
+      <div
+        className="
+          flex
+          min-h-[220px]
+          w-full
+          min-w-0
+          flex-col
+          items-center
+          justify-center
+          rounded-2xl
+          border
+          border-dashed
+          border-gray-600
+          p-4
+          sm:min-h-[240px]
+        "
+      >
         <button
+          type="button"
           onClick={handleAdd}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg m-5"
+          className="
+            flex
+            w-full
+            max-w-[220px]
+            flex-col
+            items-center
+            justify-center
+            gap-2
+            rounded-xl
+            bg-blue-600
+            px-4
+            py-3
+            text-xs
+            font-semibold
+            text-white
+            transition
+            hover:bg-blue-700
+            sm:text-sm
+          "
         >
-          <IoAddCircleOutline className="size-12 bg-[#2333] p-1.5 rounded-full" />
+          <IoAddCircleOutline
+            className="
+              h-12
+              w-12
+              rounded-full
+              bg-[#2333]
+              p-1.5
+              sm:h-14
+              sm:w-14
+            "
+          />
+
           إضافة منتج جديد للمتجر
         </button>
       </div>
 
-      {/* Modal */}
+      {/* ==========================================
+          Modal
+      ========================================== */}
       <AddProductModal
         isOpen={isOpen}
         onClose={() => {
           setIsOpen(false);
           setProductToEdit(null);
         }}
-        getproducts={getProducts}
+        getProducts={getProducts}
         productToEdit={productToEdit}
       />
     </div>

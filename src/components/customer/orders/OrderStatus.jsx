@@ -1,58 +1,45 @@
 import {
-  CheckCircleIcon,
   ClockIcon,
   TruckIcon,
+  CheckCircleIcon,
   XCircleIcon,
 } from "@heroicons/react/24/outline";
 
 const statusStyles = {
-  pending: {
-    text: "قيد التنفيذ",
+  processing: {
+    label: "قيد التنفيذ",
     icon: ClockIcon,
-    bg: "bg-blue-500/10",
-    textColor: "text-blue-400",
-    border: "border-blue-500/30",
+    className: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20",
   },
-
   shipping: {
-    text: "جاري الشحن",
+    label: "جاري الشحن",
     icon: TruckIcon,
-    bg: "bg-yellow-500/10",
-    textColor: "text-yellow-400",
-    border: "border-yellow-500/30",
+    className: "bg-blue-500/10 text-blue-400 border-blue-500/20",
   },
-
   delivered: {
-    text: "تم التوصيل",
+    label: "تم التوصيل",
     icon: CheckCircleIcon,
-    bg: "bg-green-500/10",
-    textColor: "text-green-400",
-    border: "border-green-500/30",
+    className: "bg-green-500/10 text-green-400 border-green-500/20",
   },
-
   cancelled: {
-    text: "ملغي",
+    label: "ملغي",
     icon: XCircleIcon,
-    bg: "bg-red-500/10",
-    textColor: "text-red-400",
-    border: "border-red-500/30",
+    className: "bg-red-500/10 text-red-400 border-red-500/20",
   },
 };
 
-const OrderStatus = ({ status = "pending" }) => {
-  const current = statusStyles[status] || statusStyles.pending;
+const OrderStatus = ({ status }) => {
+  const config = statusStyles[status] || statusStyles.processing;
 
-  const Icon = current.icon;
+  const Icon = config.icon;
 
   return (
     <div
-      className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 ${current.bg} ${current.border}`}
+      className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium sm:gap-2 sm:px-4 sm:py-2 sm:text-sm ${config.className}`}
     >
-      <Icon className={`h-5 w-5 ${current.textColor}`} />
+      <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
 
-      <span className={`text-sm font-semibold ${current.textColor}`}>
-        {current.text}
-      </span>
+      <span>{config.label}</span>
     </div>
   );
 };

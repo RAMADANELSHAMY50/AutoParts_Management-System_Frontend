@@ -9,75 +9,117 @@ import { FiDatabase } from "react-icons/fi";
 const actions = [
   {
     id: 1,
-    title: "إنشاء نسخة احتياطية",
-    description: "احفظ نسخة احتياطية من جميع بيانات النظام.",
-    icon: <FiDatabase size={26} />,
-    button: "إنشاء",
+    title: "System Name",
+    description: "AutoParts Management System",
+    icon: <FiDatabase size={24} />,
     color: "text-blue-300",
   },
   {
     id: 2,
-    title: "سجلات الأمان",
-    description: "مراجعة عمليات الدخول وسجل النشاط.",
-    icon: <HiOutlineShieldCheck size={26} />,
-    button: "عرض السجل",
+    title: "Version",
+    description: "1.0.0",
+    icon: <HiOutlineShieldCheck size={24} />,
     color: "text-emerald-300",
   },
   {
     id: 3,
-    title: "مزامنة سحابية",
-    description: "مزامنة البيانات مع التخزين السحابي.",
-    icon: <HiOutlineCloudArrowUp size={26} />,
-    button: "مزامنة",
+    title: "Backend",
+    description: "Strapi",
+    icon: <HiOutlineCloudArrowUp size={24} />,
     color: "text-cyan-300",
   },
   {
     id: 4,
-    title: "إعادة ضبط النظام",
-    description: "إعادة الإعدادات الافتراضية للنظام.",
-    icon: <HiOutlineArrowPath size={26} />,
-    button: "إعادة ضبط",
+    title: "Frontend",
+    description: "React",
+    icon: <HiOutlineArrowPath size={24} />,
     color: "text-red-400",
-    danger: true,
   },
 ];
 
 export default function ActionCards() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div
+      dir="rtl"
+      className="
+        grid
+        grid-cols-1
+        gap-3
+        sm:grid-cols-2
+        sm:gap-4
+        lg:grid-cols-4
+        lg:gap-6
+      "
+    >
       {actions.map((item) => (
         <div
           key={item.id}
-          className="bg-[#171717] border border-zinc-800 rounded-2xl p-6 flex flex-col justify-between hover:border-indigo-400 transition-all duration-300"
+          className="
+            flex
+            min-w-0
+            flex-col
+            justify-between
+            rounded-xl
+            border
+            border-zinc-800
+            bg-[#171717]
+            p-4
+            transition-all
+            duration-300
+            hover:border-indigo-400
+            sm:rounded-2xl
+            sm:p-5
+            lg:p-6
+          "
         >
           {/* Icon */}
           <div
-            className={`w-14 h-14 rounded-xl bg-[#222] flex items-center justify-center ${item.color}`}
+            className={`
+              flex
+              h-12
+              w-12
+              shrink-0
+              items-center
+              justify-center
+              rounded-xl
+              bg-[#222]
+              sm:h-14
+              sm:w-14
+              ${item.color}
+            `}
           >
             {item.icon}
           </div>
 
           {/* Content */}
-          <div className="mt-5">
-            <h3 className="text-lg font-semibold text-white mb-2 text-right">
+          <div className="mt-4 min-w-0 sm:mt-5">
+            <h3
+              className="
+                mb-1
+                break-words
+                text-right
+                text-base
+                font-semibold
+                text-white
+                sm:mb-2
+                sm:text-lg
+              "
+            >
               {item.title}
             </h3>
 
-            <p className="text-sm text-zinc-400 text-right leading-6">
+            <p
+              className="
+                break-words
+                text-right
+                text-sm
+                leading-6
+                text-zinc-400
+              "
+            >
               {item.description}
             </p>
           </div>
-
-          {/* Button */}
-          <button
-            className={`mt-6 w-full rounded-xl py-3 font-medium transition-all duration-300 ${
-              item.danger
-                ? "bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white"
-                : "bg-indigo-300 text-[#181818] hover:bg-indigo-200"
-            }`}
-          >
-            {item.button}
-          </button>
         </div>
       ))}
     </div>

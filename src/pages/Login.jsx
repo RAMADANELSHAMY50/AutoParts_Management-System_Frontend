@@ -1,3 +1,4 @@
+
 import { Link, useNavigate } from "react-router-dom";
 import img_login from "../assets/images/img_login.png";
 import { ImArrowLeft2 } from "react-icons/im";
@@ -5,171 +6,344 @@ import { Field, Formik, Form } from "formik";
 import axios from "axios";
 import * as YUP from "yup";
 import toast from "react-hot-toast";
+import { useAuth } from "../store/Auth.jsx";
+
+const API_URL = "http://localhost:1337";
+
 export default function Login() {
   const navigate = useNavigate();
 
+  const { login } = useAuth();
+
+  // =====================================================
+  // Handle Login
+  // =====================================================
+
   const handleLogin = async (values) => {
     try {
+      // =================================================
       // 1. Login
-      const res = await axios.post("http://localhost:1337/api/auth/local", {
-        identifier: values.email,
-        password: values.password,
-      });
+      // =================================================
 
+      const res = await axios.post(
+        `${API_URL}/api/auth/local`,
+        {
+          identifier: values.email,
+          password: values.password,
+        }
+      );
+
+      // =================================================
       // 2. Get JWT
-      const token = res.data.jwt;
+      // =================================================
 
+      const token = res.data?.jwt;
+
+      if (!token) {
+        toast.error("لم يتم الحصول على Token");
+        return;
+      }
+
+      // =================================================
       // 3. Save JWT
+      // =================================================
+
       localStorage.setItem("token", token);
 
+      // =================================================
+      // 4. Get Current User + Role
+      // =================================================
 
-
-      // 4. Get current user + role
       const userRes = await axios.get(
-        "http://localhost:1337/api/users/me?populate=role",
+        `${API_URL}/api/users/me?populate=role`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        },
+        }
       );
 
-      // 5. Get user
+      // =================================================
+      // 5. Get User
+      // =================================================
 
       const user = userRes.data;
 
-      console.log("USER:", user);
-      console.log("ROLE:", user.role);
+      console.log("LOGIN USER:", user);
+      console.log("LOGIN ROLE:", user?.role);
+      console.log("LOGIN ROLE TYPE:", user?.role?.type);
 
+      // =================================================
+      // 6. Validate Role
+      // =================================================
 
-      // 6. Save user
-      localStorage.setItem("user", JSON.stringify(user));
+      const role = user?.role?.type;
 
-      // 7. Redirect according to role
-      if (user.role.name === "Admin") {
-        navigate("/dashboard");
-      } else if (user.role.name === "Customer") {
-        navigate("/home");
-      } else {
-        toast.error("Unknown user role");
+      if (role !== "admin" && role !== "customer") {
+        localStorage.removeItem("token");
+
+        toast.error("دور المستخدم غير معروف");
+
+        return;
       }
 
-      toast.success("Login successful!");
+      // =================================================
+      // 7. Save User In AuthContext
+      // =================================================
+
+      login(user);
+
+      // =================================================
+      // 8. Save User In LocalStorage
+      // =================================================
+
+      localStorage.setItem(
+        "user",
+        JSON.stringify(user)
+      );
+
+      // =================================================
+      // 9. Redirect According To Role
+      // =================================================
+
+      if (role === "admin") {
+        navigate("/dashboard", {
+          replace: true,
+        });
+      } else if (role === "customer") {
+        navigate("/home", {
+          replace: true,
+        });
+      }
+
+      // =================================================
+      // 10. Success
+      // =================================================
+
+      toast.success("تم تسجيل الدخول بنجاح");
+
     } catch (error) {
+      console.error(
+        "LOGIN ERROR:",
+        error.response?.data || error
+      );
 
-      toast.error(error.response?.data?.error?.message || "Failed to login.");
-
+      toast.error(
+        error.response?.data?.error?.message ||
+          "فشل تسجيل الدخول"
+      );
     }
   };
 
-  let loginSchema = YUP.object({
-    email: YUP.string().email().required("Empty email..!"),
-    password: YUP.string().required("Empty password..!"),
+  // =====================================================
+  // Validation
+  // =====================================================
+
+  const loginSchema = YUP.object({
+    email: YUP.string()
+      .email("البريد الإلكتروني غير صحيح")
+      .required("البريد الإلكتروني مطلوب"),
+
+    password: YUP.string()
+      .required("كلمة المرور مطلوبة"),
   });
+
+  // =====================================================
+  // Render
+  // =====================================================
+
   return (
     <>
       <div className="grid grid-cols-1 lg:grid-cols-12">
-        <div className="relative hidden lg:block lg:col-span-7">
+
+        {/* ================================================= */}
+        {/* Left Image */}
+        {/* ================================================= */}
+
+        <div className="relative hidden lg:col-span-7 lg:block">
+
           <img
             src={img_login}
             alt="Super Car"
-            className="w-full h-screen object-cover"
+            className="h-screen w-full object-cover"
           />
 
           {/* Dark Overlay */}
+
           <div className="absolute inset-0 bg-black/30" />
 
           {/* Left Gradient */}
+
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-[#131313]" />
 
           {/* Bottom Gradient */}
+
           <div className="absolute inset-x-0 bottom-0 h-56 bg-gradient-to-t from-[#131313] to-transparent" />
 
-          <div className="absolute top-1/2 p-10 w-3/4">
+          {/* Text */}
+
+          <div className="absolute top-1/2 w-3/4 p-10">
+
             <h2 className="text-4xl font-bold text-white">
-              مستقبل <span className="text-[#B3C5FF]"> قيادة السيارات </span>بين
-              يديك الآن.{" "}
+              مستقبل{" "}
+              <span className="text-[#B3C5FF]">
+                قيادة السيارات
+              </span>{" "}
+              بين يديك الآن.
             </h2>
+
             <p className="text-[#B7B5B4]">
-              تحكم في مخزونك، مبيعاتك، وعملياتك اللوجستية من خلال منصة Apex Auto
-              المتطورة. صُممت خصيصاً لتناسب تطلعاتك نحو التميز.
+              تحكم في مخزونك، مبيعاتك، وعملياتك
+              اللوجستية من خلال منصة Apex Auto
+              المتطورة. صُممت خصيصاً لتناسب
+              تطلعاتك نحو التميز.
             </p>
+
           </div>
         </div>
 
-        <div className="lg:col-span-5 bg-surface p-8 lg:p-12 text-center flex flex-col justify-center">
-          <h1 className="text-[#B3C5FF] font-bold text-4xl mb-4">زيدان</h1>
-          <div className="">
-            <h2 className=" text-[#E5E2E1] text-3xl font-semibold">
+        {/* ================================================= */}
+        {/* Login Form */}
+        {/* ================================================= */}
+
+        <div className="flex flex-col justify-center bg-surface p-8 text-center lg:col-span-5 lg:p-12">
+
+          {/* Logo */}
+
+          <h1 className="mb-4 text-4xl font-bold text-[#B3C5FF]">
+            زيدان
+          </h1>
+
+          <div>
+
+            <h2 className="text-3xl font-semibold text-[#E5E2E1]">
               أهلاً بك مجدداً
             </h2>
-            <p className="text-[#C2C6D8] text-sm font-normal">
+
+            <p className="text-sm font-normal text-[#C2C6D8]">
               الرجاء تسجيل الدخول لمتابعة أعمالك
             </p>
+
           </div>
+
           <div className="mt-[25px]">
+
             <div className="card-body">
+
               <Formik
-                initialValues={{ email: "", password: "" }}
-                validationSchema={loginSchema}
-                onSubmit={(values) => {
-                  handleLogin(values);
+                initialValues={{
+                  email: "",
+                  password: "",
                 }}
+                validationSchema={loginSchema}
+                onSubmit={handleLogin}
               >
+
                 <Form>
-                  <fieldset className="fieldset bg-[#1A1A1A] p-4 lg:p-8 rounded-xl border border-[#ffffff62]">
-                    <div className="flex flex-col mb-6">
-                      <label className="label text-xs font-medium text-[#C2C6D8] text-start mb-2">
+
+                  <fieldset className="fieldset rounded-xl border border-[#ffffff62] bg-[#1A1A1A] p-4 lg:p-8">
+
+                    {/* ================================================= */}
+                    {/* Email */}
+                    {/* ================================================= */}
+
+                    <div className="mb-6 flex flex-col">
+
+                      <label className="label mb-2 text-start text-xs font-medium text-[#C2C6D8]">
                         البريد الإلكتروني
                       </label>
+
                       <Field
                         name="email"
                         type="email"
-                        className="input bg-[#1C1B1B] border border-[#424656] rounded-lg placeholder:text-[#8C90A1] placeholder:text-sm py-1"
+                        className="input rounded-lg border border-[#424656] bg-[#1C1B1B] py-1 placeholder:text-sm placeholder:text-[#8C90A1]"
                         placeholder="zidan@email.com"
                       />
+
                     </div>
 
-                    <div className="flex flex-col mb-6">
-                      <label className="label text-xs font-medium text-[#C2C6D8] text-start mb-2">
+                    {/* ================================================= */}
+                    {/* Password */}
+                    {/* ================================================= */}
+
+                    <div className="mb-6 flex flex-col">
+
+                      <label className="label mb-2 text-start text-xs font-medium text-[#C2C6D8]">
                         كلمة المرور
                       </label>
+
                       <Field
                         name="password"
                         type="password"
-                        className="input bg-[#1C1B1B] border border-[#424656] rounded-lg placeholder:text-[#8C90A1] placeholder:text-sm py-1"
-                        placeholder="  كلمة المرور"
+                        className="input rounded-lg border border-[#424656] bg-[#1C1B1B] py-1 placeholder:text-[#8C90A1]"
+                        placeholder="كلمة المرور"
                       />
+
                     </div>
 
-                    <div className="bg-[#0066FF] mt-4 flex justify-center rounded-lg">
+                    {/* ================================================= */}
+                    {/* Login Button */}
+                    {/* ================================================= */}
+
+                    <div className="mt-4 flex justify-center rounded-lg bg-[#0066FF]">
+
                       <button
                         type="submit"
-                        className="flex items-center p-2 gap-2 font-bold text-white text-lg"
+                        className="flex items-center gap-2 p-2 text-lg font-bold text-white"
                       >
                         تسجيل الدخول
+
                         <ImArrowLeft2 />
+
                       </button>
+
                     </div>
+
                   </fieldset>
+
                 </Form>
+
               </Formik>
-              <div className="mt-5 flex justify-center items-center gap-2">
-                <span className=" bg-[#ffffff74] h-0.5 w-100"></span>
-                <p className="text-[#eeeaea89] font-bold text-lg">&&</p>
-                <span className=" bg-[#ffffff74] h-0.5 w-100"></span>
+
+              {/* ================================================= */}
+              {/* Divider */}
+              {/* ================================================= */}
+
+              <div className="mt-5 flex items-center justify-center gap-2">
+
+                <span className="h-0.5 w-100 bg-[#ffffff74]" />
+
+                <p className="text-lg font-bold text-[#eeeaea89]">
+                  &&
+                </p>
+
+                <span className="h-0.5 w-100 bg-[#ffffff74]" />
+
               </div>
+
+              {/* ================================================= */}
+              {/* Register */}
+              {/* ================================================= */}
+
               <Link
                 to="/"
-                className="text-[#B3C5FF] text-sm font-bold flex justify-center mt-[23px]"
+                className="mt-[23px] flex justify-center text-sm font-bold text-[#B3C5FF]"
               >
-                <p className="font-normal text-[#C2C6D8]">لديك حساب بالفعل؟ </p>
+                <p className="font-normal text-[#C2C6D8]">
+                  ليس لديك حساب؟
+                </p>
+
                 إنشاء الحساب
               </Link>
+
             </div>
+
           </div>
+
         </div>
+
       </div>
     </>
   );
 }
+

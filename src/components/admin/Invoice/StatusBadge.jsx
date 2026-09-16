@@ -1,5 +1,3 @@
-import React from "react";
-
 const statusStyles = {
   paid: {
     text: "مدفوعة",
@@ -36,22 +34,27 @@ export default function StatusBadge({
   status = "paid",
   className = "",
 }) {
-  const badge = statusStyles[status] || statusStyles.pending;
+  const badge =
+    statusStyles[status] ||
+    statusStyles.pending;
 
   return (
     <span
       className={`
         inline-flex
+        shrink-0
         items-center
         justify-center
-        rounded-full
-        px-3
-        py-1
-        text-xs
-        font-semibold
         whitespace-nowrap
+        rounded-full
+        px-2.5
+        py-1
+        text-[10px]
+        font-semibold
         ${badge.className}
         ${className}
+        sm:px-3
+        sm:text-xs
       `}
     >
       {badge.text}

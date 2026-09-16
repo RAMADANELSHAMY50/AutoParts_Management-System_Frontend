@@ -12,114 +12,169 @@ export default function CartPanel({
   removeItem,
 }) {
   const subtotal = cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
+    (sum, item) =>
+      sum +
+      Number(item.price || 0) *
+        Number(item.quantity || 0),
     0
   );
 
   const tax = subtotal * 0.15;
+  const discount = 0;
   const total = subtotal + tax;
-  const discount=0;
 
   return (
-    <aside className="w-[360px] h-full bg-[#181818] border-r border-zinc-800 flex flex-col">
+    <div className="flex w-full flex-col bg-[#181818]">
+      {/* ==========================================
+          Header
+      ========================================== */}
+      <div className="border-b border-zinc-800 p-3 sm:p-4 lg:p-5">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <h2 className="text-lg font-bold text-white sm:text-xl">
+              سلة المشتريات
+            </h2>
 
-      {/* Header */}
-      <div className="p-5 border-b border-zinc-800">
-        <h2 className="text-xl font-bold text-white">
-          Shopping Cart
-        </h2>
+            <p className="mt-1 text-xs text-zinc-400 sm:text-sm">
+              {cartItems.length} منتج
+            </p>
+          </div>
 
-        <p className="text-sm text-zinc-400 mt-1">
-          {cartItems.length} Item(s)
-        </p>
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-600/10 text-blue-500 sm:h-10 sm:w-10">
+            🛒
+          </div>
+        </div>
       </div>
 
-      {/* Cart Items */}
-      <div className="flex-1 overflow-y-auto p-5 space-y-4">
+      {/* ==========================================
+          Cart Items
+          
+          Mobile:
+          Normal page height
+
+          Desktop:
+          Can scroll when there are many items
+      ========================================== */}
+      <div className="space-y-3 p-3 sm:space-y-4 sm:p-4 lg:max-h-[calc(100vh-380px)] lg:overflow-y-auto lg:p-5">
         {cartItems.length === 0 ? (
-          <div className="h-full flex items-center justify-center text-zinc-500">
-            Cart is empty
+          <div className="flex min-h-[180px] items-center justify-center rounded-xl border border-dashed border-zinc-700 bg-[#202020] p-5 text-center sm:min-h-[220px]">
+            <div>
+              <div className="mb-3 text-4xl opacity-40">
+                🛒
+              </div>
+
+              <p className="text-sm text-zinc-500 sm:text-base">
+                السلة فارغة
+              </p>
+
+              <p className="mt-1 text-xs text-zinc-600">
+                اختر منتجًا لإضافته إلى السلة
+              </p>
+            </div>
           </div>
         ) : (
           cartItems.map((item) => (
             <div
               key={item.id}
-              className="bg-[#222222] rounded-xl p-3 flex gap-3"
+              className="flex gap-2.5 rounded-xl border border-zinc-800 bg-[#222222] p-2.5 transition hover:border-zinc-700 sm:gap-3 sm:p-3"
             >
               {/* Image */}
               <img
-                src={item.image}
+                src={item.image || "/placeholder.jpg"}
                 alt={item.name}
-                className="w-20 h-20 rounded-lg object-cover"
+                className="h-16 w-16 shrink-0 rounded-lg object-cover sm:h-20 sm:w-20"
               />
 
-              {/* Details */}
-              <div className="flex-1">
-                <h3 className="text-white font-medium">
+              {/* Product Info */}
+              <div className="min-w-0 flex-1">
+                <h3 className="line-clamp-2 text-sm font-medium leading-5 text-white sm:text-base">
                   {item.name}
                 </h3>
 
-                <p className="text-blue-400 font-semibold mt-1">
-                  ${item.price}
+                <p className="mt-1 text-sm font-semibold text-blue-400">
+                  {Number(item.price || 0).toFixed(2)} ر.س
                 </p>
 
                 {/* Quantity */}
-                <div className="flex items-center gap-2 mt-3">
+                <div className="mt-2.5 flex items-center gap-1.5 sm:mt-3 sm:gap-2">
                   <button
-                    onClick={() => decreaseQty(item.id)}
-                    className="w-8 h-8 rounded-lg bg-[#2d2d2d] hover:bg-zinc-700 flex items-center justify-center"
+                    type="button"
+                    onClick={() =>
+                      decreaseQty(item.id)
+                    }
+                    className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#2d2d2d] text-white transition hover:bg-zinc-700 sm:h-8 sm:w-8"
                   >
-                    <MdRemove />
+                    <MdRemove size={17} />
                   </button>
 
-                  <span className="w-8 text-center text-white">
+                  <span className="w-7 text-center text-sm font-semibold text-white sm:w-8">
                     {item.quantity}
                   </span>
 
                   <button
-                    onClick={() => increaseQty(item.id)}
-                    className="w-8 h-8 rounded-lg bg-blue-600 hover:bg-blue-700 flex items-center justify-center"
+                    type="button"
+                    onClick={() =>
+                      increaseQty(item.id)
+                    }
+                    className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-600 text-white transition hover:bg-blue-700 sm:h-8 sm:w-8"
                   >
-                    <MdAdd />
+                    <MdAdd size={17} />
                   </button>
                 </div>
               </div>
 
               {/* Delete */}
               <button
-                onClick={() => removeItem(item.id)}
-                className="text-red-500 hover:text-red-400 self-start"
+                type="button"
+                onClick={() =>
+                  removeItem(item.id)
+                }
+                className="flex h-8 w-8 shrink-0 items-center justify-center self-start rounded-lg text-red-500 transition hover:bg-red-500/10 hover:text-red-400"
               >
-                <MdDeleteOutline size={22} />
+                <MdDeleteOutline size={20} />
               </button>
             </div>
           ))
         )}
       </div>
 
-      {/* Summary */}
-      <div className="border-t border-zinc-800 p-5 space-y-4">
-        <div className="flex justify-between text-zinc-400">
-          <span>Subtotal</span>
-          <span>${subtotal.toFixed(2)}</span>
-        </div>
+      {/* ==========================================
+          Summary
+      ========================================== */}
+      <div className="border-t border-zinc-800 p-3 sm:p-4 lg:p-5">
+        <div className="space-y-2.5 sm:space-y-3">
+          <div className="flex items-center justify-between text-sm text-zinc-400">
+            <span>المجموع الفرعي</span>
+            <span>
+              {subtotal.toFixed(2)} ر.س
+            </span>
+          </div>
 
-        <div className="flex justify-between text-zinc-400">
-          <span>Tax (15%)</span>
-          <span>${tax.toFixed(2)}</span>
-        </div>
+          <div className="flex items-center justify-between text-sm text-zinc-400">
+            <span>الضريبة (15%)</span>
+            <span>
+              {tax.toFixed(2)} ر.س
+            </span>
+          </div>
 
-        <div className="flex justify-between text-zinc-400">
-          <span>Discount</span>
-          <span>-${discount.toFixed(2)}</span>
-        </div>
+          <div className="flex items-center justify-between text-sm text-zinc-400">
+            <span>الخصم</span>
+            <span>
+              -{discount.toFixed(2)} ر.س
+            </span>
+          </div>
 
-        <div className="flex justify-between text-lg font-bold text-white">
-          <span>Total</span>
-          <span>${total.toFixed(2)}</span>
-        </div>
+          <div className="my-2 border-t border-zinc-800 sm:my-3" />
 
+          <div className="flex items-center justify-between text-base font-bold text-white sm:text-lg">
+            <span>الإجمالي</span>
+
+            <span className="text-blue-500">
+              {total.toFixed(2)} ر.س
+            </span>
+          </div>
+        </div>
       </div>
-    </aside>
+    </div>
   );
 }

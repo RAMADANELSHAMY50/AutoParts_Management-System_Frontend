@@ -6,13 +6,13 @@ export default function VehicleSelector({
   return (
     <div className="space-y-3">
       {/* Title */}
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-white">
-          Compatible Vehicle
+      <div className="flex min-w-0 items-center justify-between gap-2">
+        <h3 className="text-sm font-semibold text-white sm:text-lg">
+          السيارة المتوافقة
         </h3>
 
         {selectedVehicle && (
-          <span className="text-sm text-zinc-400">
+          <span className="max-w-[50%] truncate text-[11px] text-zinc-400 sm:text-sm">
             {selectedVehicle}
           </span>
         )}
@@ -21,18 +21,25 @@ export default function VehicleSelector({
       {/* Select */}
       <select
         value={selectedVehicle}
-        onChange={(e) => onChange(e.target.value)}
-        className="w-full rounded-xl border border-zinc-700 bg-[#171717] px-4 py-3 text-white outline-none transition focus:border-blue-600"
+        onChange={(e) =>
+          onChange(e.target.value)
+        }
+        className="w-full min-w-0 rounded-xl border border-zinc-700 bg-[#171717] px-3 py-2.5 text-xs text-white outline-none transition focus:border-blue-600 sm:px-4 sm:py-3 sm:text-sm"
       >
         <option value="" disabled>
-          Select your vehicle
+          اختر السيارة
         </option>
 
-        {vehicles.map((vehicle, index) => (
-          <option key={index} value={vehicle}>
-            {vehicle}
-          </option>
-        ))}
+        {vehicles.map(
+          (vehicle, index) => (
+            <option
+              key={index}
+              value={vehicle}
+            >
+              {vehicle}
+            </option>
+          )
+        )}
       </select>
     </div>
   );
